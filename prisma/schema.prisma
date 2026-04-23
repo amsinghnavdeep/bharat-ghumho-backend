@@ -1,0 +1,236 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum BookingType {
+  FLIGHT
+  HOTEL
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  TICKETED
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum AlertMethod {
+  EMAIL
+  WHATSAPP
+  BOTH
+}
+
+enum CabinClass {
+  ECONOMY
+  PREMIUM_ECONOMY
+  BUSINESS
+  FIRST
+}
+
+model User {
+  id               String     @id @default(uuid()) @db.Uuid
+  email            String     @unique
+  passwordHash     String?
+  firstName        String
+  lastName         String
+  phone            String?
+  avatar           String?
+  role             UserRole   @default(USER)
+  language         String     @default("en")
+  currency         String     @default("INR")
+  isEmailVerified  Boolean    @default(false)
+  oauthProvider    String?
+  oauthId          String?
+  notifyEmail      Boolean    @default(true)
+  notifyWhatsApp   Boolean    @default(false)
+  notifySMS        Boolean    @default(false)
+  seatPreference   String?
+  mealPreference   String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  bookings         Booking[]
+  priceAlerts      PriceAlert[]
+  reviews          Review[]
+  sessions         Session[]
+  searchHistory    SearchHistory[]
+  savedPassengers  SavedPassenger[]
+
+  @@index([email])
+  @@index([oauthProvider, oauthId])
+  @@map("users")
+}
+
+model SavedPassenger {
+  id             String    @id @default(uuid()) @db.Uuid
+  userId         String    @db.Uuid
+  firstName      String
+  lastName       String
+  dateOfBirth    DateTime
+  gender         String
+  passportNumber String?
+  nationality    String?
+  passportExpiry DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("saved_passengers")
+}
+
+model Booking {
+  id              String        @id @default(uuid()) @db.Uuid
+  userId          String        @db.Uuid
+  type            BookingType
+  status          BookingStatus @default(PENDING)
+  pnr             String        @unique
+  amadeusOrderId  String?
+  totalAmount     Decimal       @db.Decimal(12, 2)
+  currency        String        @default("INR")
+  passengers      Json
+  segments        Json
+  contactEmail    String
+  contactPhone    String
+  specialRequests String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  user            User          @relation(fields: [userId], references: [id])
+  payment         Payment?
+  reviews         Review[]
+
+  @@index([userId])
+  @@index([pnr])
+  @@index([status])
+  @@index([createdAt])
+  @@map("bookings")
+}
+
+model Payment {
+  id                    String        @id @default(uuid()) @db.Uuid
+  bookingId             String        @unique @db.Uuid
+  stripePaymentIntentId String        @unique
+  amount                Decimal       @db.Decimal(12, 2)
+  currency              String        @default("INR")
+  status                PaymentStatus @default(PENDING)
+  refundAmount          Decimal?      @db.Decimal(12, 2)
+  refundId              String?
+  paidAt                DateTime?
+  failureReason         String?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  booking               Booking       @relation(fields: [bookingId], references: [id])
+
+  @@index([stripePaymentIntentId])
+  @@map("payments")
+}
+
+model PriceAlert {
+  id            String      @id @default(uuid()) @db.Uuid
+  userId        String      @db.Uuid
+  origin        String
+  destination   String
+  departureDate DateTime
+  returnDate    DateTime?
+  cabinClass    CabinClass  @default(ECONOMY)
+  targetPrice   Decimal     @db.Decimal(12, 2)
+  currentPrice  Decimal?    @db.Decimal(12, 2)
+  currency      String      @default("INR")
+  isActive      Boolean     @default(true)
+  alertMethod   AlertMethod @default(EMAIL)
+  lastCheckedAt DateTime?
+  expiresAt     DateTime
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
+  @@index([expiresAt])
+  @@map("price_alerts")
+}
+
+model Review {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  bookingId   String   @db.Uuid
+  rating      Int
+  title       String?
+  comment     String
+  helpfulCount Int     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id])
+  booking     Booking  @relation(fields: [bookingId], references: [id])
+
+  @@unique([userId, bookingId])
+  @@index([bookingId])
+  @@index([rating])
+  @@map("reviews")
+}
+
+model Session {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  refreshToken String   @unique
+  userAgent    String?
+  ipAddress    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model SearchHistory {
+  id          String      @id @default(uuid()) @db.Uuid
+  userId      String      @db.Uuid
+  type        BookingType
+  query       Json
+  resultCount Int         @default(0)
+  createdAt   DateTime    @default(now())
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("search_history")
+}
+
+model FestivalDeal {
+  id                 String    @id @default(uuid()) @db.Uuid
+  festivalName       String    @unique
+  description        String
+  startDate          DateTime
+  endDate            DateTime
+  destinations       Json
+  discountPercentage Decimal?  @db.Decimal(5, 2)
+  bannerImage        String?
+  isActive           Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([isActive])
+  @@index([startDate, endDate])
+  @@map("festival_deals")
+}
