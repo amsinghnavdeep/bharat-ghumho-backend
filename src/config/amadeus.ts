@@ -1,10 +1,17 @@
-import Amadeus from "amadeus";
-
 /**
- * Amadeus SDK client for flights and hotels APIs.
+ * Amadeus SDK initialization — Canadian Corp credentials
  */
-export const amadeus = new Amadeus({
-  clientId: process.env.AMADEUS_CLIENT_ID ?? "",
-  clientSecret: process.env.AMADEUS_CLIENT_SECRET ?? "",
-  hostname: (process.env.AMADEUS_HOSTNAME as "test" | "production") ?? "test"
+import Amadeus from 'amadeus';
+import { logger } from '../utils/logger';
+
+const hostname = (process.env.AMADEUS_HOSTNAME as 'test' | 'production') || 'test';
+
+const amadeus = new Amadeus({
+  clientId: process.env.AMADEUS_CLIENT_ID || '',
+  clientSecret: process.env.AMADEUS_CLIENT_SECRET || '',
+  hostname,
 });
+
+logger.info(`Amadeus SDK initialized in ${hostname} mode`);
+
+export { amadeus };

@@ -1,40 +1,31 @@
-import { PrismaClient } from "@prisma/client";
-import { logger } from "@/utils/logger";
-
 /**
- * Singleton Prisma client for database operations.
+ * Prisma client singleton — prevents hot-reload leaks in development
  */
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient | null };
+import { PrismaClient } from '@prisma/client';
+import { logger } from '../utils/logger';
 
-export let prisma: PrismaClient | null = globalForPrisma.prisma ?? null;
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
-export async function connectDatabase(): Promise<void> {
-  if (prisma) {
-    return;
-  }
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({
+    log:
+      process.env.NODE_ENV === 'development'
+        ? [
+            { emit: 'event', level: 'query' },
+            { emit: 'stdout', level: 'info' },
+            { emit: 'stdout', level: 'warn' },
+            { emit: 'stdout', level: 'error' },
+          ]
+        : [{ emit: 'stdout', level: 'error' }],
+  });
 
-  if (!process.env.DATABASE_URL) {
-    logger.warn("DATABASE_URL is missing. Database connection skipped.");
-    return;
-  }
+if (process.env.NODE_ENV === 'development') {
+  (prisma as any).$on('query', (e: any) => {
+    logger.debug(`Query: ${e.query} | Duration: ${e.duration}ms`);
+  });
+}
 
-  try {
-    const client = new PrismaClient({
-      log: process.env.NODE_ENV === "development" ? ["query", "info", "warn", "error"] : ["error"]
-    });
-
-    await client.$connect();
-    prisma = client;
-
-    if (process.env.NODE_ENV !== "production") {
-      globalForPrisma.prisma = prisma;
-    }
-
-    logger.info("PostgreSQL connected via Prisma");
-  } catch (error) {
-    prisma = null;
-    logger.error("Prisma connection failed. Continuing without database connection.", {
-      error: error instanceof Error ? error.message : "Unknown Prisma connection error"
-    });
-  }
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
 }

@@ -1,41 +1,23 @@
-import { Router } from "express";
-import { body } from "express-validator";
-
+import { Router } from 'express';
+import * as auth from '../controllers/auth.controller';
+import { authenticate } from '../middleware/auth.middleware';
+import { authLimiter } from '../middleware/rateLimiter.middleware';
+import { validate } from '../middleware/validate.middleware';
 import {
-  appleAuth,
-  forgotPassword,
-  googleAuth,
-  login,
-  logout,
-  refreshToken,
-  register,
-  resetPassword,
-  verifyEmail
-} from "@/controllers/auth.controller";
-import { authenticate } from "@/middleware/auth.middleware";
-import { validateMiddleware } from "@/middleware/validate.middleware";
+  registerValidation, loginValidation, refreshTokenValidation,
+  forgotPasswordValidation, resetPasswordValidation, verifyEmailValidation, oauthValidation,
+} from '../utils/validators';
 
 const router = Router();
 
-router.post(
-  "/register",
-  [
-    body("email").isEmail(),
-    body("password").isLength({ min: 8 }),
-    body("firstName").notEmpty(),
-    body("lastName").notEmpty(),
-    validateMiddleware
-  ],
-  register
-);
+router.post('/register', authLimiter, validate(registerValidation), auth.register);
+router.post('/login', authLimiter, validate(loginValidation), auth.login);
+router.post('/refresh', validate(refreshTokenValidation), auth.refreshTokenHandler);
+router.post('/logout', authenticate, auth.logout);
+router.post('/forgot-password', authLimiter, validate(forgotPasswordValidation), auth.forgotPassword);
+router.post('/reset-password', validate(resetPasswordValidation), auth.resetPassword);
+router.post('/verify-email', validate(verifyEmailValidation), auth.verifyEmail);
+router.post('/google', validate(oauthValidation), auth.googleAuth);
+router.post('/apple', validate(oauthValidation), auth.appleAuth);
 
-router.post("/login", [body("email").isEmail(), body("password").notEmpty(), validateMiddleware], login);
-router.post("/refresh", [body("refreshToken").notEmpty(), validateMiddleware], refreshToken);
-router.post("/logout", authenticate, logout);
-router.post("/forgot-password", [body("email").isEmail(), validateMiddleware], forgotPassword);
-router.post("/reset-password", [body("token").notEmpty(), body("newPassword").isLength({ min: 8 }), validateMiddleware], resetPassword);
-router.post("/verify-email", [body("token").notEmpty(), validateMiddleware], verifyEmail);
-router.post("/google", [body("idToken").notEmpty(), validateMiddleware], googleAuth);
-router.post("/apple", [body("idToken").notEmpty(), validateMiddleware], appleAuth);
-
-export default router;
+export { router as authRouter };

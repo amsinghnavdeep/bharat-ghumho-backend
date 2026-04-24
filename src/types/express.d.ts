@@ -1,4 +1,7 @@
-import type { UserRole } from "@prisma/client";
+/**
+ * Express type augmentation — attaches user to Request
+ */
+import { UserRole } from '@prisma/client';
 
 declare global {
   namespace Express {

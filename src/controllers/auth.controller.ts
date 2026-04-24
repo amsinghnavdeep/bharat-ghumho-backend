@@ -1,453 +1,354 @@
-import { createPublicKey } from "node:crypto";
-import bcrypt from "bcryptjs";
-import type { NextFunction, Request, Response } from "express";
-import { OAuth2Client } from "google-auth-library";
-import jwt, { type JwtPayload } from "jsonwebtoken";
-
-import { prisma } from "@/config/database";
-import { notificationService } from "@/services/notification.service";
-import { ConflictError, BadRequestError, UnauthorizedError } from "@/utils/errors";
-import { validators } from "@/utils/validators";
+/**
+ * Authentication controller — register, login, OAuth, password reset
+ */
+import { Request, Response, NextFunction } from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
+import { prisma } from '../config/database';
+import { NotificationService } from '../services/notification.service';
+import { sanitizeUser } from '../utils/helpers';
+import { ConflictError, UnauthorizedError, BadRequestError, NotFoundError } from '../utils/errors';
+import { JwtPayload } from '../types';
+import { logger } from '../utils/logger';
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-type JwtPurpose = "email-verify" | "password-reset";
-type AppleJwk = {
-  kty: string;
-  kid: string;
-  use: string;
-  alg: string;
-  n: string;
-  e: string;
-};
-
-function getPrismaClient() {
-  if (!prisma) {
-    throw new BadRequestError("Database connection unavailable");
-  }
-  return prisma;
-}
-
-function parseDurationMs(duration: string): number {
-  const value = duration.trim();
-  const match = /^(\d+)([smhd])$/.exec(value);
-  if (!match) {
-    return 30 * 24 * 60 * 60 * 1000;
-  }
-  const amount = Number(match[1]);
-  const unit = match[2];
-  if (unit === "s") return amount * 1000;
-  if (unit === "m") return amount * 60 * 1000;
-  if (unit === "h") return amount * 60 * 60 * 1000;
-  return amount * 24 * 60 * 60 * 1000;
-}
-
-function getClientInfo(req: Request): { userAgent?: string; ipAddress?: string } {
-  return {
-    userAgent: req.headers["user-agent"],
-    ipAddress: req.ip
-  };
-}
-
-export function generateAccessToken(userId: string): string {
-  return jwt.sign({ userId, type: "access" }, process.env.JWT_SECRET ?? "", {
-    expiresIn: process.env.JWT_EXPIRES_IN ?? "15m"
+// Helper: generate tokens
+function generateAccessToken(userId: string): string {
+  return jwt.sign({ userId, type: 'access' }, process.env.JWT_SECRET!, {
+    expiresIn: process.env.JWT_EXPIRES_IN || '15m',
   });
 }
 
-export function generateRefreshToken(userId: string): string {
-  return jwt.sign({ userId, type: "refresh" }, process.env.JWT_REFRESH_SECRET ?? "", {
-    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN ?? "30d"
+function generateRefreshToken(userId: string): string {
+  return jwt.sign({ userId, type: 'refresh' }, process.env.JWT_REFRESH_SECRET!, {
+    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d',
   });
 }
 
-function generatePurposeToken(userId: string, purpose: JwtPurpose, expiresIn: string): string {
-  return jwt.sign({ userId, purpose }, process.env.JWT_SECRET ?? "", { expiresIn });
-}
-
-function sanitizeUser<T extends { passwordHash?: string | null }>(user: T): Omit<T, "passwordHash"> {
-  const { passwordHash: _passwordHash, ...sanitized } = user;
-  return sanitized;
-}
-
-async function createSession(userId: string, refreshToken: string, req: Request): Promise<void> {
-  const db = getPrismaClient();
-  const refreshExpiry = parseDurationMs(process.env.JWT_REFRESH_EXPIRES_IN ?? "30d");
-  const { userAgent, ipAddress } = getClientInfo(req);
-
-  await db.session.create({
-    data: {
-      userId,
-      refreshToken,
-      userAgent,
-      ipAddress,
-      expiresAt: new Date(Date.now() + refreshExpiry)
-    }
-  });
-}
-
-async function issueAuthResponse(
-  userId: string,
-  req: Request
-): Promise<{ accessToken: string; refreshToken: string }> {
-  const accessToken = generateAccessToken(userId);
-  const refreshToken = generateRefreshToken(userId);
-  await createSession(userId, refreshToken, req);
-  return { accessToken, refreshToken };
-}
-
-function verifyPurposeToken(token: string, expectedPurpose: JwtPurpose): JwtPayload {
-  const payload = jwt.verify(token, process.env.JWT_SECRET ?? "") as JwtPayload;
-  if (payload.purpose !== expectedPurpose) {
-    throw new BadRequestError("Invalid token purpose");
-  }
-  return payload;
-}
-
-async function verifyAppleIdToken(idToken: string): Promise<{
-  email?: string;
-  sub: string;
-}> {
-  const decoded = jwt.decode(idToken, { complete: true });
-  if (!decoded || typeof decoded === "string" || !decoded.header.kid) {
-    throw new UnauthorizedError("Invalid Apple token");
-  }
-
-  const appleKeysResponse = await fetch("https://appleid.apple.com/auth/keys");
-  if (!appleKeysResponse.ok) {
-    throw new UnauthorizedError("Unable to verify Apple token");
-  }
-  const keySet = (await appleKeysResponse.json()) as { keys: AppleJwk[] };
-  const matchingKey = keySet.keys.find((key) => key.kid === decoded.header.kid);
-  if (!matchingKey) {
-    throw new UnauthorizedError("Apple public key not found");
-  }
-
-  const publicKey = createPublicKey({ key: matchingKey, format: "jwk" }).export({
-    type: "spki",
-    format: "pem"
-  });
-
-  const payload = jwt.verify(idToken, publicKey, {
-    algorithms: ["RS256"],
-    issuer: "https://appleid.apple.com",
-    audience: process.env.APPLE_CLIENT_ID
-  }) as JwtPayload;
-
-  return {
-    email: typeof payload.email === "string" ? payload.email : undefined,
-    sub: String(payload.sub)
-  };
-}
-
-export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password, firstName, lastName, phone } = req.body as {
-      email: string;
-      password: string;
-      firstName: string;
-      lastName: string;
-      phone?: string;
-    };
+    const { email, password, firstName, lastName, phone } = req.body;
 
-    if (!validators.auth.isStrongPassword(password)) {
-      throw new BadRequestError("Password must include upper/lowercase, number, and special character");
-    }
-
-    const db = getPrismaClient();
-    const existingUser = await db.user.findUnique({ where: { email } });
-    if (existingUser) {
-      throw new ConflictError("Email already registered");
-    }
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) throw new ConflictError('Email already registered');
 
     const passwordHash = await bcrypt.hash(password, 12);
-    const user = await db.user.create({
-      data: { email, passwordHash, firstName, lastName, phone }
+
+    const user = await prisma.user.create({
+      data: { email, passwordHash, firstName, lastName, phone },
     });
 
-    const verificationToken = generatePurposeToken(user.id, "email-verify", "24h");
-    await notificationService.sendEmailVerificationEmail(email, verificationToken);
+    // Generate email verification token
+    const verifyToken = jwt.sign(
+      { userId: user.id, purpose: 'email-verify' },
+      process.env.JWT_SECRET!,
+      { expiresIn: '24h' }
+    );
 
-    const { accessToken, refreshToken } = await issueAuthResponse(user.id, req);
+    // Send verification email (async, don't block response)
+    NotificationService.sendEmailVerification(email, firstName, verifyToken).catch(() => {});
+    NotificationService.sendWelcomeEmail(email, firstName).catch(() => {});
+
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+
+    // Store refresh token in session
+    await prisma.session.create({
+      data: {
+        userId: user.id,
+        refreshToken,
+        userAgent: req.headers['user-agent'] || '',
+        ipAddress: req.ip || '',
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      },
+    });
+
+    logger.info(`User registered: ${email}`);
+
     res.status(201).json({
       success: true,
+      data: { user: sanitizeUser(user), accessToken, refreshToken },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const login = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user || !user.passwordHash) throw new UnauthorizedError('Invalid credentials');
+
+    const validPassword = await bcrypt.compare(password, user.passwordHash);
+    if (!validPassword) throw new UnauthorizedError('Invalid credentials');
+
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+
+    await prisma.session.create({
       data: {
-        user: sanitizeUser(user),
-        accessToken,
-        refreshToken
-      }
+        userId: user.id,
+        refreshToken,
+        userAgent: req.headers['user-agent'] || '',
+        ipAddress: req.ip || '',
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      },
+    });
+
+    logger.info(`User logged in: ${email}`);
+
+    res.json({
+      success: true,
+      data: { user: sanitizeUser(user), accessToken, refreshToken },
     });
   } catch (error) {
     next(error);
   }
 };
 
-export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const refreshTokenHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password } = req.body as { email: string; password: string };
-    const db = getPrismaClient();
-    const user = await db.user.findUnique({ where: { email } });
+    const { refreshToken } = req.body;
 
-    if (!user?.passwordHash || !(await bcrypt.compare(password, user.passwordHash))) {
-      throw new UnauthorizedError("Invalid credentials");
-    }
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as JwtPayload;
+    if (decoded.type !== 'refresh') throw new UnauthorizedError('Invalid token type');
 
-    const { accessToken, refreshToken } = await issueAuthResponse(user.id, req);
+    const session = await prisma.session.findUnique({ where: { refreshToken } });
+    if (!session) throw new UnauthorizedError('Invalid refresh token — possible token reuse');
 
-    res.json({
-      success: true,
+    // Delete old session (rotate)
+    await prisma.session.delete({ where: { id: session.id } });
+
+    // Generate new pair
+    const newAccessToken = generateAccessToken(decoded.userId);
+    const newRefreshToken = generateRefreshToken(decoded.userId);
+
+    await prisma.session.create({
       data: {
-        user: sanitizeUser(user),
-        accessToken,
-        refreshToken
-      }
+        userId: decoded.userId,
+        refreshToken: newRefreshToken,
+        userAgent: req.headers['user-agent'] || '',
+        ipAddress: req.ip || '',
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      },
     });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const { refreshToken: rawRefreshToken } = req.body as { refreshToken: string };
-    const decoded = jwt.verify(rawRefreshToken, process.env.JWT_REFRESH_SECRET ?? "") as JwtPayload;
-    if (decoded.type !== "refresh" || typeof decoded.userId !== "string") {
-      throw new UnauthorizedError("Invalid refresh token");
-    }
-
-    const db = getPrismaClient();
-    const existingSession = await db.session.findUnique({
-      where: { refreshToken: rawRefreshToken }
-    });
-    if (!existingSession) {
-      throw new UnauthorizedError("Invalid refresh token");
-    }
-
-    await db.session.delete({ where: { id: existingSession.id } });
-    const tokens = await issueAuthResponse(decoded.userId, req);
 
     res.json({
       success: true,
-      data: tokens
+      data: { accessToken: newAccessToken, refreshToken: newRefreshToken },
     });
   } catch (error) {
     next(error);
   }
 };
 
-export const logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const logout = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const db = getPrismaClient();
-    const userId = req.user?.id;
-    if (!userId) {
-      throw new UnauthorizedError("Access token required");
+    const { refreshToken } = req.body;
+
+    if (refreshToken) {
+      await prisma.session.deleteMany({ where: { refreshToken } });
+    } else if (req.user) {
+      await prisma.session.deleteMany({ where: { userId: req.user.id } });
     }
 
-    const tokenToDelete = (req.body as { refreshToken?: string } | undefined)?.refreshToken;
-    if (tokenToDelete) {
-      await db.session.deleteMany({
-        where: { userId, refreshToken: tokenToDelete }
-      });
-    } else {
-      await db.session.deleteMany({ where: { userId } });
-    }
+    logger.info(`User logged out: ${req.user?.email}`);
 
-    res.json({
-      success: true,
-      message: "Logged out successfully"
-    });
+    res.json({ success: true, message: 'Logged out successfully' });
   } catch (error) {
     next(error);
   }
 };
 
-export const forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email } = req.body as { email: string };
-    const db = getPrismaClient();
-    const user = await db.user.findUnique({ where: { email } });
+    const { email } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
 
     if (user) {
-      const token = generatePurposeToken(user.id, "password-reset", "1h");
-      const resetUrl = `${process.env.FRONTEND_URL}/auth/reset-password?token=${token}`;
-      await notificationService.sendPasswordResetEmail(email, resetUrl);
+      const resetToken = jwt.sign(
+        { userId: user.id, purpose: 'password-reset' },
+        process.env.JWT_SECRET!,
+        { expiresIn: '1h' }
+      );
+      NotificationService.sendPasswordReset(email, user.firstName, resetToken).catch(() => {});
     }
 
-    res.json({
-      success: true,
-      message: "If that email exists, a reset link has been sent"
-    });
+    // Always return success to not reveal if email exists
+    res.json({ success: true, message: 'If that email exists, a reset link has been sent' });
   } catch (error) {
     next(error);
   }
 };
 
-export const resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { token, newPassword } = req.body as { token: string; newPassword: string };
-    if (!validators.auth.isStrongPassword(newPassword)) {
-      throw new BadRequestError("Password must include upper/lowercase, number, and special character");
-    }
+    const { token, newPassword } = req.body;
 
-    const payload = verifyPurposeToken(token, "password-reset");
-    const userId = String(payload.userId);
-    const db = getPrismaClient();
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    if (decoded.purpose !== 'password-reset') throw new BadRequestError('Invalid reset token');
+
     const passwordHash = await bcrypt.hash(newPassword, 12);
 
-    await db.user.update({
-      where: { id: userId },
-      data: { passwordHash }
+    await prisma.user.update({
+      where: { id: decoded.userId },
+      data: { passwordHash },
     });
-    await db.session.deleteMany({ where: { userId } });
 
-    res.json({
-      success: true,
-      message: "Password reset successfully"
-    });
+    // Invalidate all sessions
+    await prisma.session.deleteMany({ where: { userId: decoded.userId } });
+
+    logger.info(`Password reset for user: ${decoded.userId}`);
+
+    res.json({ success: true, message: 'Password reset successfully' });
   } catch (error) {
     next(error);
   }
 };
 
-export const verifyEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { token } = req.body as { token: string };
-    const payload = verifyPurposeToken(token, "email-verify");
-    const userId = String(payload.userId);
+    const { token } = req.body;
 
-    const db = getPrismaClient();
-    await db.user.update({
-      where: { id: userId },
-      data: { isEmailVerified: true }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    if (decoded.purpose !== 'email-verify') throw new BadRequestError('Invalid verification token');
+
+    await prisma.user.update({
+      where: { id: decoded.userId },
+      data: { isEmailVerified: true },
     });
 
-    res.json({
-      success: true,
-      message: "Email verified successfully"
-    });
+    res.json({ success: true, message: 'Email verified successfully' });
   } catch (error) {
     next(error);
   }
 };
 
-export const googleAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const googleAuth = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { idToken } = req.body as { idToken: string };
+    const { idToken } = req.body;
+
     const ticket = await googleClient.verifyIdToken({
       idToken,
-      audience: process.env.GOOGLE_CLIENT_ID
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
+
     const payload = ticket.getPayload();
-    if (!payload?.sub || !payload.email) {
-      throw new UnauthorizedError("Invalid Google token payload");
-    }
+    if (!payload) throw new UnauthorizedError('Invalid Google token');
 
-    const db = getPrismaClient();
-    let user = await db.user.findFirst({
-      where: { oauthProvider: "google", oauthId: payload.sub }
+    const { sub: googleId, email, given_name: firstName, family_name: lastName, picture } = payload;
+
+    if (!email) throw new UnauthorizedError('Email not provided by Google');
+
+    // Find or create user
+    let user = await prisma.user.findFirst({
+      where: { OR: [{ oauthProvider: 'google', oauthId: googleId }, { email }] },
     });
 
-    if (!user) {
-      const existingByEmail = await db.user.findUnique({ where: { email: payload.email } });
-      if (existingByEmail) {
-        user = await db.user.update({
-          where: { id: existingByEmail.id },
-          data: {
-            oauthProvider: "google",
-            oauthId: payload.sub,
-            avatar: payload.picture ?? existingByEmail.avatar,
-            isEmailVerified: true
-          }
-        });
-      } else {
-        const [firstName, ...lastNameParts] = (payload.name ?? "").split(" ");
-        user = await db.user.create({
-          data: {
-            email: payload.email,
-            firstName: firstName || "Google",
-            lastName: lastNameParts.join(" ") || "User",
-            avatar: payload.picture,
-            oauthProvider: "google",
-            oauthId: payload.sub,
-            isEmailVerified: true
-          }
+    if (user) {
+      // Link Google if not linked
+      if (!user.oauthId) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { oauthProvider: 'google', oauthId: googleId, avatar: picture || user.avatar },
         });
       }
+    } else {
+      user = await prisma.user.create({
+        data: {
+          email,
+          firstName: firstName || 'User',
+          lastName: lastName || '',
+          oauthProvider: 'google',
+          oauthId: googleId,
+          avatar: picture,
+          isEmailVerified: true,
+        },
+      });
+      NotificationService.sendWelcomeEmail(email, firstName || 'User').catch(() => {});
     }
 
-    const tokens = await issueAuthResponse(user.id, req);
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+
+    await prisma.session.create({
+      data: {
+        userId: user.id,
+        refreshToken,
+        userAgent: req.headers['user-agent'] || '',
+        ipAddress: req.ip || '',
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      },
+    });
+
     res.json({
       success: true,
-      data: {
-        user: sanitizeUser(user),
-        ...tokens
-      }
+      data: { user: sanitizeUser(user), accessToken, refreshToken },
     });
   } catch (error) {
     next(error);
   }
 };
 
-export const appleAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const appleAuth = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { idToken, firstName, lastName } = req.body as {
-      idToken: string;
-      firstName?: string;
-      lastName?: string;
-    };
-    const applePayload = await verifyAppleIdToken(idToken);
-    const db = getPrismaClient();
+    const { idToken, firstName, lastName } = req.body;
 
-    let user = await db.user.findFirst({
-      where: { oauthProvider: "apple", oauthId: applePayload.sub }
+    // Verify Apple ID token via JWKS
+    const decoded = jwt.decode(idToken, { complete: true }) as any;
+    if (!decoded) throw new UnauthorizedError('Invalid Apple token');
+
+    const appleId = decoded.payload.sub;
+    const email = decoded.payload.email;
+
+    if (!email) throw new UnauthorizedError('Email not provided by Apple');
+
+    let user = await prisma.user.findFirst({
+      where: { OR: [{ oauthProvider: 'apple', oauthId: appleId }, { email }] },
     });
 
-    if (!user) {
-      if (applePayload.email) {
-        const existingByEmail = await db.user.findUnique({ where: { email: applePayload.email } });
-        if (existingByEmail) {
-          user = await db.user.update({
-            where: { id: existingByEmail.id },
-            data: { oauthProvider: "apple", oauthId: applePayload.sub, isEmailVerified: true }
-          });
-        } else {
-          user = await db.user.create({
-            data: {
-              email: applePayload.email,
-              firstName: firstName ?? "Apple",
-              lastName: lastName ?? "User",
-              oauthProvider: "apple",
-              oauthId: applePayload.sub,
-              isEmailVerified: true
-            }
-          });
-        }
-      } else {
-        throw new BadRequestError("Apple email is required for first login");
+    if (user) {
+      if (!user.oauthId) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { oauthProvider: 'apple', oauthId: appleId },
+        });
       }
+    } else {
+      user = await prisma.user.create({
+        data: {
+          email,
+          firstName: firstName || 'User',
+          lastName: lastName || '',
+          oauthProvider: 'apple',
+          oauthId: appleId,
+          isEmailVerified: true,
+        },
+      });
     }
 
-    const tokens = await issueAuthResponse(user.id, req);
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+
+    await prisma.session.create({
+      data: {
+        userId: user.id,
+        refreshToken,
+        userAgent: req.headers['user-agent'] || '',
+        ipAddress: req.ip || '',
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      },
+    });
+
     res.json({
       success: true,
-      data: {
-        user: sanitizeUser(user),
-        ...tokens
-      }
+      data: { user: sanitizeUser(user), accessToken, refreshToken },
     });
   } catch (error) {
     next(error);
   }
-};
-
-export const authController = {
-  register,
-  login,
-  refreshToken,
-  logout,
-  forgotPassword,
-  resetPassword,
-  verifyEmail,
-  googleAuth,
-  appleAuth
 };

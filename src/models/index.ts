@@ -1,3 +1,6 @@
+/**
+ * Re-export Prisma types and enums for clean imports
+ */
 export {
   PrismaClient,
   Prisma,
@@ -6,8 +9,8 @@ export {
   BookingStatus,
   PaymentStatus,
   AlertMethod,
-  CabinClass
-} from "@prisma/client";
+  CabinClass,
+} from '@prisma/client';
 
 export type {
   User,
@@ -18,5 +21,5 @@ export type {
   Session,
   SearchHistory,
   SavedPassenger,
-  FestivalDeal
-} from "@prisma/client";
+  FestivalDeal,
+} from '@prisma/client';

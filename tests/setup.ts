@@ -1,1 +1,8 @@
-// TODO: global test setup
+/**
+ * Jest test setup
+ */
+import { prisma } from '../src/config/database';
+
+afterAll(async () => {
+  await prisma.$disconnect();
+});

@@ -1,34 +1,36 @@
-# --- Stage 1: Base ---
-FROM node:20-alpine AS base
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --only=production
+# ============================================
+# Bharat Ghumho Backend — Multi-stage Dockerfile
+# ============================================
 
-# --- Stage 2: Build ---
-FROM base AS build
+# --- Stage 1: Builder ---
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json package-lock.json* ./
 RUN npm ci
-COPY . .
+COPY prisma ./prisma
 RUN npx prisma generate
+COPY tsconfig.json ./
+COPY src ./src
 RUN npm run build
 
-# --- Stage 3: Dev (local testing) ---
+# --- Stage 2: Dev ---
 FROM node:20-alpine AS dev
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json* ./
 RUN npm ci
 COPY . .
 RUN npx prisma generate
-EXPOSE 3000
+EXPOSE 4000
 CMD ["npm", "run", "dev"]
 
-# --- Stage 4: Production ---
+# --- Stage 3: Production ---
 FROM node:20-alpine AS production
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
-COPY package.json ./
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY prisma ./prisma
-EXPOSE 3000
+EXPOSE 4000
 CMD ["node", "dist/app.js"]

@@ -1,58 +1,62 @@
 /**
- * Application-level base error with operational classification.
+ * Custom error classes for consistent error handling
  */
+
 export class AppError extends Error {
   public readonly statusCode: number;
-  public readonly status: "fail" | "error";
+  public readonly status: string;
   public readonly isOperational: boolean;
 
   constructor(message: string, statusCode: number) {
     super(message);
     this.statusCode = statusCode;
-    this.status = statusCode >= 500 ? "error" : "fail";
+    this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
     this.isOperational = true;
+    Object.setPrototypeOf(this, new.target.prototype);
     Error.captureStackTrace(this, this.constructor);
   }
 }
 
 export class BadRequestError extends AppError {
-  constructor(message = "Bad request") {
+  constructor(message = 'Bad request') {
     super(message, 400);
   }
 }
 
 export class UnauthorizedError extends AppError {
-  constructor(message = "Unauthorized") {
+  constructor(message = 'Unauthorized') {
     super(message, 401);
   }
 }
 
 export class ForbiddenError extends AppError {
-  constructor(message = "Forbidden") {
+  constructor(message = 'Forbidden') {
     super(message, 403);
   }
 }
 
 export class NotFoundError extends AppError {
-  constructor(message = "Resource not found") {
+  constructor(message = 'Resource not found') {
     super(message, 404);
   }
 }
 
 export class ConflictError extends AppError {
-  constructor(message = "Conflict") {
+  constructor(message = 'Resource already exists') {
     super(message, 409);
   }
 }
 
 export class ValidationError extends AppError {
-  constructor(message = "Validation failed") {
+  public readonly errors: any[];
+  constructor(message = 'Validation failed', errors: any[] = []) {
     super(message, 422);
+    this.errors = errors;
   }
 }
 
 export class InternalError extends AppError {
-  constructor(message = "Internal server error") {
+  constructor(message = 'Internal server error') {
     super(message, 500);
   }
 }

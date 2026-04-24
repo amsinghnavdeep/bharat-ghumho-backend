@@ -1,21 +1,23 @@
 services:
+  # --- PostgreSQL ---
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${DB_USER:-bharat}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-bharat_dev_123}
-      POSTGRES_DB: ${DB_NAME:-bharat_ghumho}
+      POSTGRES_DB: bharat_ghumho
+      POSTGRES_USER: bharat_user
+      POSTGRES_PASSWORD: bharat_pass
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-bharat}"]
+      test: ["CMD-SHELL", "pg_isready -U bharat_user -d bharat_ghumho"]
       interval: 5s
       timeout: 3s
       retries: 5
 
+  # --- Redis ---
   redis:
     image: redis:7-alpine
     restart: unless-stopped
@@ -29,16 +31,18 @@ services:
       timeout: 3s
       retries: 5
 
-  app-dev:
+  # --- API (dev) ---
+  api-dev:
     build:
       context: .
       target: dev
     profiles: ["dev"]
+    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "4000:4000"
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=postgresql://${DB_USER:-bharat}:${DB_PASSWORD:-bharat_dev_123}@postgres:5432/${DB_NAME:-bharat_ghumho}
+      - DATABASE_URL=postgresql://bharat_user:bharat_pass@postgres:5432/bharat_ghumho
       - REDIS_URL=redis://redis:6379
     env_file:
       - .env
@@ -52,17 +56,17 @@ services:
         condition: service_healthy
     command: npm run dev
 
-  app-prod:
+  # --- API (production) ---
+  api-prod:
     build:
       context: .
       target: production
     profiles: ["prod"]
+    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "4000:4000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=${REDIS_URL}
     env_file:
       - .env
     depends_on:
@@ -71,25 +75,27 @@ services:
       redis:
         condition: service_healthy
 
+  # --- Migrations ---
   migrate:
     build:
       context: .
       target: dev
     profiles: ["migrate"]
     environment:
-      - DATABASE_URL=postgresql://${DB_USER:-bharat}:${DB_PASSWORD:-bharat_dev_123}@postgres:5432/${DB_NAME:-bharat_ghumho}
+      - DATABASE_URL=postgresql://bharat_user:bharat_pass@postgres:5432/bharat_ghumho
     depends_on:
       postgres:
         condition: service_healthy
-    command: npx prisma migrate deploy
+    command: npx prisma migrate dev --name init
 
+  # --- Seed ---
   seed:
     build:
       context: .
       target: dev
     profiles: ["seed"]
     environment:
-      - DATABASE_URL=postgresql://${DB_USER:-bharat}:${DB_PASSWORD:-bharat_dev_123}@postgres:5432/${DB_NAME:-bharat_ghumho}
+      - DATABASE_URL=postgresql://bharat_user:bharat_pass@postgres:5432/bharat_ghumho
     depends_on:
       postgres:
         condition: service_healthy

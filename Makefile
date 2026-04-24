@@ -1,55 +1,44 @@
-# --- FIRST TIME (one command does everything) ---
+# Bharat Ghumho Backend — Commands
+
+# First-time setup (one command)
 setup:
 	cp -n .env.example .env || true
 	docker compose up -d postgres redis
-	sleep 3
+	sleep 5
 	docker compose --profile migrate run --rm migrate
 	docker compose --profile seed run --rm seed
-	docker compose --profile dev up -d
-	@echo "🚀 Running at http://localhost:3000"
+	@echo "\n🚀 Database ready! Run 'make dev' to start the app.\n"
 
-# --- DAILY DEV ---
-dev-up:
-	docker compose --profile dev up -d
-
-dev-down:
-	docker compose --profile dev down
-
-dev-logs:
-	docker compose --profile dev logs -f app-dev
-
-# --- DB ONLY (if running app outside docker) ---
-db-up:
+# Start dev (app runs outside Docker, DB in Docker)
+dev:
 	docker compose up -d postgres redis
+	npm run dev
 
-db-down:
+# Start everything in Docker
+dev-docker:
+	docker compose --profile dev up -d
+
+# Stop
+down:
 	docker compose down
 
-# --- MIGRATIONS ---
+# Database
 migrate:
-	docker compose --profile migrate run --rm migrate
+	npx prisma migrate dev
 
 seed:
-	docker compose --profile seed run --rm seed
+	npx prisma db seed
 
-# --- CLEAN EVERYTHING ---
+studio:
+	npx prisma studio
+
+# Testing
+test:
+	npm test
+
+# Clean everything
 clean:
 	docker compose down -v --remove-orphans
+	@echo "🧹 Cleaned"
 
-# --- PRODUCTION BUILD ---
-build-prod:
-	docker build --target production -t bharat-ghumho:latest .
-
-# --- HELP ---
-help:
-	@echo "Available commands:"
-	@echo "  make setup       - First time setup (DB + app)"
-	@echo "  make dev-up      - Start development"
-	@echo "  make dev-down    - Stop development"
-	@echo "  make dev-logs    - Watch dev logs"
-	@echo "  make db-up       - Start DB only (Postgres + Redis)"
-	@echo "  make db-down     - Stop DB"
-	@echo "  make migrate     - Run migrations"
-	@echo "  make seed        - Seed database"
-	@echo "  make clean       - Remove all containers and volumes"
-	@echo "  make build-prod  - Build production Docker image"
+.PHONY: setup dev dev-docker down migrate seed studio test clean

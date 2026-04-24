@@ -1,148 +1,165 @@
-import "dotenv/config";
+/**
+ * Bharat Ghumho API — Main Express Application
+ */
+import dotenv from 'dotenv';
+dotenv.config();
 
-import compression from "compression";
-import cors from "cors";
-import express, { type NextFunction, type Request, type Response } from "express";
-import helmet from "helmet";
-import morgan from "morgan";
-import swaggerJSDoc from "swagger-jsdoc";
-import swaggerUi from "swagger-ui-express";
-import * as Sentry from "@sentry/node";
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import compression from 'compression';
+import morgan from 'morgan';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import * as Sentry from '@sentry/node';
 
-import { connectDatabase, prisma } from "@/config/database";
-import { connectRedis, redis } from "@/config/redis";
-import { errorMiddleware } from "@/middleware/error.middleware";
-import {
-  adminRouter,
-  authRouter,
-  bookingsRouter,
-  flightsRouter,
-  healthRouter,
-  hotelsRouter,
-  paymentsRouter,
-  priceAlertsRouter,
-  reviewsRouter,
-  searchHistoryRouter,
-  uploadRouter,
-  usersRouter
-} from "@/routes";
-import { logger, morganStream } from "@/utils/logger";
+import { validateEnv } from './config/env';
+import { prisma } from './config/database';
+import { redis } from './config/redis';
+import { logger, morganStream } from './utils/logger';
+import { errorHandler } from './middleware/error.middleware';
+import { apiLimiter } from './middleware/rateLimiter.middleware';
+import routes from './routes';
 
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  environment: process.env.NODE_ENV ?? "development",
-  tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1
-});
+// Cron jobs
+import { startPriceAlertJob } from './jobs/priceAlertJob';
+import { startBookingReminderJob } from './jobs/bookingReminderJob';
+import { startCleanupJob } from './jobs/cleanupJob';
+
+// Validate required environment variables
+validateEnv();
 
 const app = express();
-const port = Number(process.env.PORT ?? 4000);
+const PORT = parseInt(process.env.PORT || '4000', 10);
 
+// ========== SENTRY ==========
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+  });
+  app.use(Sentry.Handlers.requestHandler());
+  logger.info('Sentry initialized');
+}
+
+// ========== MIDDLEWARE ==========
 app.use(helmet());
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true
-  })
-);
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(compression());
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  morgan("combined", {
-    stream: morganStream
-  })
-);
+app.use(morgan('combined', { stream: morganStream }));
+app.use('/api/', apiLimiter);
 
-const swaggerSpec = swaggerJSDoc({
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Bharat Ghumho API",
-      version: "1.0.0"
-    },
-    servers: [{ url: process.env.API_URL ?? `http://localhost:${port}` }]
-  },
-  apis: []
-});
-
-app.get("/health", (_req, res) => {
-  res.status(200).json({
-    status: "ok",
+// ========== HEALTH CHECK ==========
+app.get('/api/health', (_req, res) => {
+  res.json({
+    success: true,
+    status: 'ok',
+    service: 'Bharat Ghumho API',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV ?? "development"
+    environment: process.env.NODE_ENV || 'development',
   });
 });
 
-app.use("/api/health", healthRouter);
-app.use("/api/auth", authRouter);
-app.use("/api/users", usersRouter);
-app.use("/api/flights", flightsRouter);
-app.use("/api/hotels", hotelsRouter);
-app.use("/api/bookings", bookingsRouter);
-app.use("/api/payments", paymentsRouter);
-app.use("/api/price-alerts", priceAlertsRouter);
-app.use("/api/reviews", reviewsRouter);
-app.use("/api/search-history", searchHistoryRouter);
-app.use("/api/admin", adminRouter);
-app.use("/api/upload", uploadRouter);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// ========== SWAGGER ==========
+const swaggerSpec = swaggerJsdoc({
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Bharat Ghumho API',
+      version: '1.0.0',
+      description: 'India-centric global flight and hotel booking platform API',
+    },
+    servers: [{ url: process.env.API_URL || 'http://localhost:4000' }],
+    components: {
+      securitySchemes: {
+        bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  },
+  apis: ['./src/routes/*.ts'],
+});
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-Sentry.setupExpressErrorHandler(app);
-app.use(errorMiddleware);
+// ========== API ROUTES ==========
+app.use('/api', routes);
 
-app.use((_req: Request, _res: Response, next: NextFunction) => {
-  next();
+// ========== 404 HANDLER ==========
+app.use((_req, res) => {
+  res.status(404).json({ success: false, message: 'Route not found' });
 });
 
-let server: ReturnType<typeof app.listen>;
+// ========== SENTRY ERROR HANDLER ==========
+if (process.env.SENTRY_DSN) {
+  app.use(Sentry.Handlers.errorHandler());
+}
 
-async function shutdown(signal: string): Promise<void> {
-  logger.info(`Received ${signal}, initiating graceful shutdown`);
+// ========== ERROR HANDLER ==========
+app.use(errorHandler);
 
-  if (!server) {
-    process.exit(0);
-    return;
-  }
+// ========== START SERVER ==========
+async function startServer() {
+  try {
+    // Connect to database
+    await prisma.$connect();
+    logger.info('✅ Database connected');
 
-  server.close(async (serverError?: Error) => {
-    if (serverError) {
-      logger.error("Failed to close HTTP server cleanly", { error: serverError.message });
+    // Connect to Redis
+    await redis.connect();
+    logger.info('✅ Redis connected');
+
+    // Start cron jobs
+    if (process.env.NODE_ENV !== 'test') {
+      startPriceAlertJob();
+      startBookingReminderJob();
+      startCleanupJob();
     }
 
-    try {
-      if (prisma) {
+    const server = app.listen(PORT, () => {
+      logger.info(`\n🚀 Bharat Ghumho API running on port ${PORT}`);
+      logger.info(`📚 Swagger docs: http://localhost:${PORT}/api-docs`);
+      logger.info(`❤️  Health check: http://localhost:${PORT}/api/health\n`);
+    });
+
+    // Graceful shutdown
+    const shutdown = async (signal: string) => {
+      logger.info(`\n${signal} received — shutting down gracefully...`);
+
+      server.close(async () => {
         await prisma.$disconnect();
-      }
-      await redis.quit();
-      logger.info("Graceful shutdown completed");
-      process.exit(0);
-    } catch (shutdownError) {
-      logger.error("Graceful shutdown failed", {
-        error: shutdownError instanceof Error ? shutdownError.message : "Unknown shutdown error"
+        logger.info('Database disconnected');
+
+        redis.quit();
+        logger.info('Redis disconnected');
+
+        logger.info('Server closed. Goodbye! 👋');
+        process.exit(0);
       });
-      process.exit(1);
-    }
-  });
+
+      // Force shutdown after 10 seconds
+      setTimeout(() => {
+        logger.error('Forced shutdown after timeout');
+        process.exit(1);
+      }, 10000);
+    };
+
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
+  } catch (error) {
+    logger.error('Failed to start server:', error);
+    process.exit(1);
+  }
 }
 
-process.on("SIGINT", () => {
-  void shutdown("SIGINT");
-});
-
-process.on("SIGTERM", () => {
-  void shutdown("SIGTERM");
-});
-
-async function startServer(): Promise<void> {
-  await connectDatabase();
-  await connectRedis();
-
-  server = app.listen(port, () => {
-    logger.info(`Server running on port ${port}`);
-  });
-}
-
-void startServer();
+startServer();
 
 export default app;

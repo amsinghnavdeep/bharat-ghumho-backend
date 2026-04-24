@@ -1,43 +1,31 @@
-import adminRouter from "@/routes/admin.routes";
-import authRouter from "@/routes/auth.routes";
-import bookingsRouter from "@/routes/bookings.routes";
-import flightsRouter from "@/routes/flights.routes";
-import healthRouter from "@/routes/health.routes";
-import hotelsRouter from "@/routes/hotels.routes";
-import paymentsRouter from "@/routes/payments.routes";
-import priceAlertsRouter from "@/routes/price-alerts.routes";
-import reviewsRouter from "@/routes/reviews.routes";
-import searchHistoryRouter from "@/routes/search-history.routes";
-import uploadRouter from "@/routes/upload.routes";
-import usersRouter from "@/routes/users.routes";
-import bookingRouter from "@/routes/booking.routes";
-import flightRouter from "@/routes/flight.routes";
-import hotelRouter from "@/routes/hotel.routes";
-import paymentRouter from "@/routes/payment.routes";
-import priceAlertRouter from "@/routes/priceAlert.routes";
-import reviewRouter from "@/routes/review.routes";
-import searchRouter from "@/routes/search.routes";
-import userRouter from "@/routes/user.routes";
+/**
+ * Route aggregator — all routes mounted from here
+ */
+import { Router } from 'express';
+import { authRouter } from './auth.routes';
+import { userRouter } from './user.routes';
+import { flightRouter } from './flight.routes';
+import { hotelRouter } from './hotel.routes';
+import { bookingRouter } from './booking.routes';
+import { paymentRouter } from './payment.routes';
+import { priceAlertRouter } from './priceAlert.routes';
+import { reviewRouter } from './review.routes';
+import { searchRouter } from './search.routes';
+import { adminRouter } from './admin.routes';
+import { uploadRouter } from './upload.routes';
 
-export {
-  adminRouter,
-  authRouter,
-  bookingsRouter,
-  flightsRouter,
-  healthRouter,
-  hotelsRouter,
-  paymentsRouter,
-  priceAlertsRouter,
-  reviewsRouter,
-  searchHistoryRouter,
-  uploadRouter,
-  usersRouter,
-  bookingRouter,
-  flightRouter,
-  hotelRouter,
-  paymentRouter,
-  priceAlertRouter,
-  reviewRouter,
-  searchRouter,
-  userRouter
-};
+const router = Router();
+
+router.use('/auth', authRouter);
+router.use('/users', userRouter);
+router.use('/flights', flightRouter);
+router.use('/hotels', hotelRouter);
+router.use('/bookings', bookingRouter);
+router.use('/payments', paymentRouter);
+router.use('/price-alerts', priceAlertRouter);
+router.use('/reviews', reviewRouter);
+router.use('/search-history', searchRouter);
+router.use('/admin', adminRouter);
+router.use('/upload', uploadRouter);
+
+export default router;

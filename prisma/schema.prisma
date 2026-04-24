@@ -1,3 +1,6 @@
+// Bharat Ghumho — Database Schema
+// PostgreSQL via Prisma ORM
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,6 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ========== ENUMS ==========
 enum UserRole {
   USER
   ADMIN
@@ -48,33 +52,35 @@ enum CabinClass {
   FIRST
 }
 
+// ========== MODELS ==========
 model User {
-  id               String     @id @default(uuid()) @db.Uuid
-  email            String     @unique
-  passwordHash     String?
-  firstName        String
-  lastName         String
-  phone            String?
-  avatar           String?
-  role             UserRole   @default(USER)
-  language         String     @default("en")
-  currency         String     @default("INR")
-  isEmailVerified  Boolean    @default(false)
-  oauthProvider    String?
-  oauthId          String?
-  notifyEmail      Boolean    @default(true)
-  notifyWhatsApp   Boolean    @default(false)
-  notifySMS        Boolean    @default(false)
-  seatPreference   String?
-  mealPreference   String?
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
-  bookings         Booking[]
-  priceAlerts      PriceAlert[]
-  reviews          Review[]
-  sessions         Session[]
-  searchHistory    SearchHistory[]
-  savedPassengers  SavedPassenger[]
+  id              String    @id @default(uuid()) @db.Uuid
+  email           String    @unique
+  passwordHash    String?
+  firstName       String
+  lastName        String
+  phone           String?
+  avatar          String?
+  role            UserRole  @default(USER)
+  language        String    @default("en")
+  currency        String    @default("INR")
+  isEmailVerified Boolean   @default(false)
+  oauthProvider   String?
+  oauthId         String?
+  notifyEmail     Boolean   @default(true)
+  notifyWhatsApp  Boolean   @default(false)
+  notifySMS       Boolean   @default(false)
+  seatPreference  String?
+  mealPreference  String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  bookings        Booking[]
+  priceAlerts     PriceAlert[]
+  reviews         Review[]
+  sessions        Session[]
+  searchHistory   SearchHistory[]
+  savedPassengers SavedPassenger[]
 
   @@index([email])
   @@index([oauthProvider, oauthId])
@@ -93,7 +99,8 @@ model SavedPassenger {
   passportExpiry DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("saved_passengers")
 }
@@ -114,9 +121,10 @@ model Booking {
   specialRequests String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
-  user            User          @relation(fields: [userId], references: [id])
-  payment         Payment?
-  reviews         Review[]
+
+  user    User      @relation(fields: [userId], references: [id])
+  payment Payment?
+  reviews Review[]
 
   @@index([userId])
   @@index([pnr])
@@ -138,7 +146,8 @@ model Payment {
   failureReason         String?
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
-  booking               Booking       @relation(fields: [bookingId], references: [id])
+
+  booking Booking @relation(fields: [bookingId], references: [id])
 
   @@index([stripePaymentIntentId])
   @@map("payments")
@@ -161,7 +170,8 @@ model PriceAlert {
   expiresAt     DateTime
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([isActive])
@@ -170,17 +180,18 @@ model PriceAlert {
 }
 
 model Review {
-  id          String   @id @default(uuid()) @db.Uuid
-  userId      String   @db.Uuid
-  bookingId   String   @db.Uuid
-  rating      Int
-  title       String?
-  comment     String
-  helpfulCount Int     @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id])
-  booking     Booking  @relation(fields: [bookingId], references: [id])
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  bookingId    String   @db.Uuid
+  rating       Int
+  title        String?
+  comment      String
+  helpfulCount Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  booking Booking @relation(fields: [bookingId], references: [id])
 
   @@unique([userId, bookingId])
   @@index([bookingId])
@@ -196,7 +207,8 @@ model Session {
   ipAddress    String?
   expiresAt    DateTime
   createdAt    DateTime @default(now())
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([expiresAt])
@@ -210,7 +222,8 @@ model SearchHistory {
   query       Json
   resultCount Int         @default(0)
   createdAt   DateTime    @default(now())
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([createdAt])
@@ -218,17 +231,17 @@ model SearchHistory {
 }
 
 model FestivalDeal {
-  id                 String    @id @default(uuid()) @db.Uuid
-  festivalName       String    @unique
+  id                 String   @id @default(uuid()) @db.Uuid
+  festivalName       String
   description        String
   startDate          DateTime
   endDate            DateTime
   destinations       Json
-  discountPercentage Decimal?  @db.Decimal(5, 2)
+  discountPercentage Decimal? @db.Decimal(5, 2)
   bannerImage        String?
-  isActive           Boolean   @default(true)
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   @@index([isActive])
   @@index([startDate, endDate])

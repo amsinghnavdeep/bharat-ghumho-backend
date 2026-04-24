@@ -1,84 +1,91 @@
-import type { NextFunction, Request, Response } from "express";
-import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
-import multer from "multer";
-import Stripe from "stripe";
-import { validationResult } from "express-validator";
-import * as Sentry from "@sentry/node";
-
-import { AppError, InternalError } from "@/utils/errors";
-import { logger } from "@/utils/logger";
-
 /**
- * Centralized API error middleware with typed handling for known providers.
+ * Centralized error handling middleware
  */
-export function errorMiddleware(
-  err: unknown,
-  req: Request,
-  res: Response,
-  _next: NextFunction
-): Response {
-  let error: AppError;
-  const prismaCode = getPrismaErrorCode(err);
+import { Request, Response, NextFunction } from 'express';
+import { Prisma } from '@prisma/client';
+import { AppError, ValidationError } from '../utils/errors';
+import { logger } from '../utils/logger';
+import * as Sentry from '@sentry/node';
 
-  if (err instanceof AppError) {
-    error = err;
-  } else if (prismaCode) {
-    if (prismaCode === "P2002") {
-      error = new AppError("Duplicate resource detected", 409);
-    } else if (prismaCode === "P2025") {
-      error = new AppError("Requested resource not found", 404);
-    } else {
-      error = new InternalError("Database operation failed");
-    }
-  } else if (err instanceof TokenExpiredError) {
-    error = new AppError("JWT token expired", 401);
-  } else if (err instanceof JsonWebTokenError) {
-    error = new AppError("Invalid JWT token", 401);
-  } else if (err instanceof multer.MulterError) {
-    if (err.code === "LIMIT_FILE_SIZE") {
-      error = new AppError("Uploaded file is too large", 400);
-    } else {
-      error = new AppError(`Upload failed: ${err.message}`, 400);
-    }
-  } else if (err instanceof Stripe.errors.StripeError) {
-    error = new AppError(err.message, 402);
-  } else {
-    const expressValidationErrors = validationResult(req);
-    if (!expressValidationErrors.isEmpty()) {
-      error = new AppError("Validation failed", 422);
-    } else {
-      const message = err instanceof Error ? err.message : "Unexpected server error";
-      error = new InternalError(message);
-    }
-  }
-
-  logger.error("Request failed", {
+export const errorHandler = (err: Error, req: Request, res: Response, _next: NextFunction) => {
+  logger.error(`${err.message}`, {
+    stack: err.stack,
+    path: req.path,
     method: req.method,
-    path: req.originalUrl,
-    statusCode: error.statusCode,
-    message: error.message,
-    stack: err instanceof Error ? err.stack : undefined
+    ip: req.ip,
   });
 
-  if (process.env.NODE_ENV === "production") {
+  // Report to Sentry in production
+  if (process.env.NODE_ENV === 'production') {
     Sentry.captureException(err);
   }
 
-  return res.status(error.statusCode).json({
-    success: false,
-    message: error.message,
-    ...(process.env.NODE_ENV !== "production" &&
-      err instanceof Error && {
-        stack: err.stack
-      })
-  });
-}
-
-function getPrismaErrorCode(err: unknown): string | null {
-  if (typeof err !== "object" || err === null || !("code" in err)) {
-    return null;
+  // AppError (our custom errors)
+  if (err instanceof AppError) {
+    const response: any = {
+      success: false,
+      message: err.message,
+    };
+    if (err instanceof ValidationError && err.errors.length > 0) {
+      response.errors = err.errors;
+    }
+    if (process.env.NODE_ENV === 'development') {
+      response.stack = err.stack;
+    }
+    return res.status(err.statusCode).json(response);
   }
 
-  const { code } = err as { code?: unknown };
-  return typeof code === "string" && code.startsWith("P") ? code : null;
-}
+  // Prisma errors
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    if (err.code === 'P2002') {
+      const field = (err.meta?.target as string[])?.join(', ') || 'field';
+      return res.status(409).json({
+        success: false,
+        message: `A record with this ${field} already exists`,
+      });
+    }
+    if (err.code === 'P2025') {
+      return res.status(404).json({
+        success: false,
+        message: 'Record not found',
+      });
+    }
+  }
+
+  // JWT errors
+  if (err.name === 'JsonWebTokenError') {
+    return res.status(401).json({ success: false, message: 'Invalid token' });
+  }
+  if (err.name === 'TokenExpiredError') {
+    return res.status(401).json({ success: false, message: 'Token expired' });
+  }
+
+  // Multer errors
+  if (err.name === 'MulterError') {
+    return res.status(400).json({ success: false, message: `File upload error: ${err.message}` });
+  }
+
+  // Stripe errors
+  if ((err as any).type === 'StripeCardError') {
+    return res.status(400).json({ success: false, message: (err as any).message });
+  }
+  if ((err as any).type === 'StripeInvalidRequestError') {
+    return res.status(400).json({ success: false, message: 'Invalid payment request' });
+  }
+
+  // express-validator errors
+  if (Array.isArray((err as any).errors)) {
+    return res.status(422).json({
+      success: false,
+      message: 'Validation failed',
+      errors: (err as any).errors,
+    });
+  }
+
+  // Unknown errors
+  res.status(500).json({
+    success: false,
+    message: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message,
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+  });
+};
