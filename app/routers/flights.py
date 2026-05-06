@@ -28,15 +28,15 @@ def get_airlines():
 
 @router.post("/multi-city")
 def multi_city(req: MultiCityRequest):
-        all_results = []
-        for leg in req.legs:
-                    results = search_flights(leg.frm, leg.to, page=1, limit=5)
-                    all_results.append({"leg": {"from": leg.frm, "to": leg.to, "date": leg.date}, "options": results})
-                return {"legs": all_results, "total_legs": len(all_results)}
+    all_results = []
+    for leg in req.legs:
+        results = search_flights(leg.frm, leg.to, page=1, limit=5)
+        all_results.append({"leg": {"from": leg.frm, "to": leg.to, "date": leg.date}, "options": results})
+    return {"legs": all_results, "total_legs": len(all_results)}
 
 @router.get("/{flight_id}")
 def get_flight(flight_id: str):
-        flight = next((f for f in FLIGHTS_DB if f["id"] == flight_id), None)
+    flight = next((f for f in FLIGHTS_DB if f["id"] == flight_id), None)
     if not flight:
-                raise HTTPException(status_code=404, detail="Flight not found")
-            return enrich(flight)
+        raise HTTPException(status_code=404, detail="Flight not found")
+    return enrich(flight)
