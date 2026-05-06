@@ -1,56 +1,66 @@
 AIRLINES = {
-    "AI": {"name": "Air India", "code": "AI", "color": "#E23744", "alliance": "Star Alliance", "baggage": "2x23kg"},
-    "BA": {"name": "British Airways", "code": "BA", "color": "#00256C", "alliance": "Oneworld", "baggage": "1x23kg"},
-    "EK": {"name": "Emirates", "code": "EK", "color": "#C6A962", "alliance": "None", "baggage": "2x23kg"},
-    "AC": {"name": "Air Canada", "code": "AC", "color": "#D81921", "alliance": "Star Alliance", "baggage": "2x23kg"},
-    "QR": {"name": "Qatar Airways", "code": "QR", "color": "#5C0D34", "alliance": "Oneworld", "baggage": "2x30kg"},
-    "LH": {"name": "Lufthansa", "code": "LH", "color": "#05164D", "alliance": "Star Alliance", "baggage": "1x23kg"},
-    "SQ": {"name": "Singapore Airlines", "code": "SQ", "color": "#F5A623", "alliance": "Star Alliance", "baggage": "2x23kg"},
-    "TK": {"name": "Turkish Airlines", "code": "TK", "color": "#C7202E", "alliance": "Star Alliance", "baggage": "2x23kg"},
-    "6E": {"name": "IndiGo", "code": "6E", "color": "#3F51B5", "alliance": "None", "baggage": "1x15kg"},
-    "UK": {"name": "Vistara", "code": "UK", "color": "#4A2366", "alliance": "None", "baggage": "1x25kg"},
+        "AI": {"name": "Air India",      "logo": "ai", "alliance": "Star Alliance"},
+        "BA": {"name": "British Airways", "logo": "ba", "alliance": "Oneworld"},
+        "EK": {"name": "Emirates",        "logo": "ek", "alliance": None},
+        "AC": {"name": "Air Canada",      "logo": "ac", "alliance": "Star Alliance"},
+        "QR": {"name": "Qatar Airways",   "logo": "qr", "alliance": "Oneworld"},
+        "LH": {"name": "Lufthansa",       "logo": "lh", "alliance": "Star Alliance"},
+        "SQ": {"name": "Singapore Air",   "logo": "sq", "alliance": "Star Alliance"},
+        "TK": {"name": "Turkish Air",     "logo": "tk", "alliance": "Star Alliance"},
+        "6E": {"name": "IndiGo",          "logo": "6e", "alliance": None},
+        "UK": {"name": "Vistara",         "logo": "uk", "alliance": "Star Alliance"},
+        "WS": {"name": "WestJet",         "logo": "ws", "alliance": None},
+        "EY": {"name": "Etihad Airways",  "logo": "ey", "alliance": None},
 }
 
-FLIGHTS = [
-    {"id":"BG-1001","ac":"AI","flight":"AI 302","aircraft":"Boeing 777-300ER","fr":"YYZ","to":"DEL","frCity":"Toronto","toCity":"New Delhi","dep":"21:45","arr":"22:05","arrD":"+1","dur":"14h 20m","durM":860,"stops":0,"stopC":[],"price":687,"cabin":"Economy","meals":True,"wifi":True},
-    {"id":"BG-1002","ac":"BA","flight":"BA 036 / BA 143","aircraft":"Airbus A380","fr":"YYZ","to":"DEL","frCity":"Toronto","toCity":"New Delhi","dep":"19:30","arr":"23:15","arrD":"+1","dur":"17h 45m","durM":1065,"stops":1,"stopC":["LHR"],"price":612,"cabin":"Economy","meals":True,"wifi":True},
-    {"id":"BG-1003","ac":"EK","flight":"EK 242 / EK 510","aircraft":"Boeing 777-200LR","fr":"YYZ","to":"DEL","frCity":"Toronto","toCity":"New Delhi","dep":"22:15","arr":"03:25","arrD":"+2","dur":"19h 10m","durM":1150,"stops":1,"stopC":["DXB"],"price":724,"cabin":"Economy","meals":True,"wifi":True},
-    {"id":"BG-1004","ac":"AC","flight":"AC 042","aircraft":"Boeing 787-9","fr":"YYZ","to":"DEL","frCity":"Toronto","toCity":"New Delhi","dep":"20:30","arr":"21:10","arrD":"+1","dur":"14h 40m","durM":880,"stops":0,"stopC":[],"price":742,"cabin":"Economy","meals":True,"wifi":True},
-    {"id":"BG-1005","ac":"LH","flight":"LH 471 / LH 760","aircraft":"Airbus A340-600","fr":"YYZ","to":"DEL","frCity":"Toronto","toCity":"New Delhi","dep":"17:00","arr":"18:30","arrD":"+1","dur":"18h 30m","durM":1110,"stops":1,"stopC":["FRA"],"price":598,"cabin":"Economy","meals":True,"wifi":False},
-    {"id":"BG-2001","ac":"AI","flight":"AI 188","aircraft":"Boeing 777-300ER","fr":"YYZ","to":"BOM","frCity":"Toronto","toCity":"Mumbai","dep":"20:00","arr":"22:30","arrD":"+1","dur":"16h 30m","durM":990,"stops":0,"stopC":[],"price":715,"cabin":"Economy","meals":True,"wifi":True},
-    {"id":"BG-2002","ac":"EK","flight":"EK 242 / EK 500","aircraft":"Airbus A380","fr":"YYZ","to":"BOM","frCity":"Toronto","toCity":"Mumbai","dep":"22:15","arr":"04:50","arrD":"+2","dur":"20h 35m","durM":1235,"stops":1,"stopC":["DXB"],"price":668,"cabin":"Economy","meals":True,"wifi":True},
-    {"id":"BG-2003","ac":"QR","flight":"QR 764 / QR 556","aircraft":"Boeing 787-9","fr":"YYZ","to":"BOM","frCity":"Toronto","toCity":"Mumbai","dep":"21:30","arr":"05:20","arrD":"+2","dur":"21h 50m","durM":1310,"stops":1,"stopC":["DOH"],"price":635,"cabin":"Economy","meals":True,"wifi":True},
-    {"id":"BG-3001","ac":"AI","flight":"AI 186","aircraft":"Boeing 777-200LR","fr":"YVR","to":"BOM","frCity":"Vancouver","toCity":"Mumbai","dep":"01:30","arr":"06:15","arrD":"+1","dur":"17h 45m","durM":1065,"stops":0,"stopC":[],"price":698,"cabin":"Economy","meals":True,"wifi":True},
-    {"id":"BG-4001","ac":"AI","flight":"AI 176","aircraft":"Airbus A350-900","fr":"LHR","to":"BLR","frCity":"London","toCity":"Bangalore","dep":"20:30","arr":"10:50","arrD":"+1","dur":"10h 20m","durM":620,"stops":0,"stopC":[],"price":342,"cabin":"Economy","meals":True,"wifi":True},
-    {"id":"BG-5001","ac":"EK","flight":"EK 532","aircraft":"Boeing 777-300ER","fr":"DXB","to":"COK","frCity":"Dubai","toCity":"Kochi","dep":"09:30","arr":"14:45","arrD":"","dur":"4h 15m","durM":255,"stops":0,"stopC":[],"price":245,"cabin":"Economy","meals":True,"wifi":True},
-    {"id":"BG-6001","ac":"SQ","flight":"SQ 232 / SQ 752","aircraft":"Airbus A350-900","fr":"SYD","to":"HYD","frCity":"Sydney","toCity":"Hyderabad","dep":"09:00","arr":"22:30","arrD":"","dur":"16h 30m","durM":990,"stops":1,"stopC":["SIN"],"price":680,"cabin":"Economy","meals":True,"wifi":True},
-    {"id":"BG-7001","ac":"SQ","flight":"SQ 528","aircraft":"Boeing 787-10","fr":"SIN","to":"MAA","frCity":"Singapore","toCity":"Chennai","dep":"08:15","arr":"09:45","arrD":"","dur":"4h 30m","durM":270,"stops":0,"stopC":[],"price":245,"cabin":"Economy","meals":True,"wifi":True},
-    {"id":"BG-8001","ac":"6E","flight":"6E 2345","aircraft":"Airbus A320neo","fr":"DEL","to":"GOI","frCity":"New Delhi","toCity":"Goa","dep":"06:15","arr":"08:50","arrD":"","dur":"2h 35m","durM":155,"stops":0,"stopC":[],"price":82,"cabin":"Economy","meals":False,"wifi":False},
-    {"id":"BG-8002","ac":"UK","flight":"UK 864","aircraft":"Boeing 737-800","fr":"GOI","to":"BOM","frCity":"Goa","toCity":"Mumbai","dep":"14:00","arr":"15:15","arrD":"","dur":"1h 15m","durM":75,"stops":0,"stopC":[],"price":65,"cabin":"Economy","meals":True,"wifi":False},
-    {"id":"BG-8003","ac":"EK","flight":"EK 501 / EK 241","aircraft":"Airbus A380","fr":"BOM","to":"YYZ","frCity":"Mumbai","toCity":"Toronto","dep":"04:15","arr":"17:25","arrD":"","dur":"22h 10m","durM":1330,"stops":1,"stopC":["DXB"],"price":712,"cabin":"Economy","meals":True,"wifi":True},
-]
-
 POPULAR_ROUTES = [
-    {"from":"Toronto","fromCode":"YYZ","to":"Delhi","toCode":"DEL","region":"North America","tag":"Diwali Peak","tagClass":"sf","priceFrom":589,"currency":"USD"},
-    {"from":"Vancouver","fromCode":"YVR","to":"Mumbai","toCode":"BOM","region":"North America","tag":"Most Popular","tagClass":"gr","priceFrom":612,"currency":"USD"},
-    {"from":"London","fromCode":"LHR","to":"Bangalore","toCode":"BLR","region":"United Kingdom","tag":"Tech Corridor","tagClass":"sf","priceFrom":342,"currency":"GBP"},
-    {"from":"Dubai","fromCode":"DXB","to":"Kerala","toCode":"COK","region":"Middle East","tag":"Top Route","tagClass":"gr","priceFrom":890,"currency":"AED"},
-    {"from":"Sydney","fromCode":"SYD","to":"Hyderabad","toCode":"HYD","region":"Australia","tag":"Growing Fast","tagClass":"sf","priceFrom":680,"currency":"AUD"},
-    {"from":"Singapore","fromCode":"SIN","to":"Chennai","toCode":"MAA","region":"Southeast Asia","tag":"Quick Hop","tagClass":"gr","priceFrom":245,"currency":"USD"},
+        {"id": "r1", "region": "Canada Corridor", "from": "Toronto",   "fromCode": "YYZ", "to": "New Delhi", "toCode": "DEL", "airlines_count": 12, "price_from": 680, "currency": "CAD", "tag": "Most Popular",  "flag": "CA", "cities": "Toronto * Vancouver * Calgary * Montreal"},
+        {"id": "r2", "region": "Canada Corridor", "from": "Vancouver",  "fromCode": "YVR", "to": "Mumbai",    "toCode": "BOM", "airlines_count": 10, "price_from": 720, "currency": "CAD", "tag": "Most Popular",  "flag": "CA", "cities": "Toronto * Vancouver * Calgary * Montreal"},
+        {"id": "r3", "region": "USA Corridor",    "from": "New York",   "fromCode": "JFK", "to": "Mumbai",    "toCode": "BOM", "airlines_count": 18, "price_from": 620, "currency": "USD", "tag": "Best Value",    "flag": "US", "cities": "NYC * San Francisco * Chicago * Houston"},
+        {"id": "r4", "region": "UK Corridor",     "from": "London",     "fromCode": "LHR", "to": "Delhi",     "toCode": "DEL", "airlines_count": 15, "price_from": 420, "currency": "GBP", "tag": "Direct Flights","flag": "GB", "cities": "London * Birmingham * Manchester"},
+        {"id": "r5", "region": "UAE Corridor",    "from": "Dubai",      "fromCode": "DXB", "to": "Kerala",    "toCode": "COK", "airlines_count": 20, "price_from": 660, "currency": "AED", "tag": "Lowest Fares", "flag": "AE", "cities": "Dubai * Abu Dhabi * Sharjah"},
+        {"id": "r6", "region": "Australia Corridor", "from": "Sydney",  "fromCode": "SYD", "to": "Delhi",     "toCode": "DEL", "airlines_count": 10, "price_from": 750, "currency": "AUD", "tag": "New Routes",   "flag": "AU", "cities": "Sydney * Melbourne * Perth * Brisbane"},
+        {"id": "r7", "region": "Singapore Corridor", "from": "Singapore", "fromCode": "SIN", "to": "Chennai", "toCode": "MAA", "airlines_count": 14, "price_from": 220, "currency": "USD", "tag": "Fastest",      "flag": "SG", "cities": "Singapore * Direct to 8 Indian cities"},
 ]
 
-def enrich(f):
-    a = AIRLINES.get(f["ac"], {})
-    sl = "Non-stop" if f["stops"] == 0 else f"{f['stops']} stop - {', '.join(f['stopC'])}"
-    sc = "direct" if f["stops"] == 0 else "one"
-    return {**f, "airline": a.get("name",""), "code": a.get("code",""), "color": a.get("color",""),
-            "alliance": a.get("alliance",""), "includedBaggage": a.get("baggage",""),
-            "stopsLabel": sl, "stopsClass": sc, "from": f["fr"], "to": f["to"],
-            "fromCity": f.get("frCity",""), "toCity": f.get("toCity",""),
-            "depTime": f["dep"], "arrTime": f["arr"], "arrDay": f["arrD"],
-            "duration": f["dur"], "durationMin": f["durM"]}
+FLIGHTS_DB = [
+        {"id": "f1",  "airline": "AI", "from": "YYZ", "to": "DEL", "price": 689, "duration": "14h 30m", "stops": 0, "departure": "08:00", "arrival": "09:30+1", "baggage": "2x23kg", "class": "Economy", "seats_left": 4},
+        {"id": "f2",  "airline": "EK", "from": "YYZ", "to": "DEL", "price": 742, "duration": "17h 45m", "stops": 1, "departure": "11:30", "arrival": "16:15+1", "baggage": "2x23kg", "class": "Economy", "seats_left": 12},
+        {"id": "f3",  "airline": "QR", "from": "YYZ", "to": "DEL", "price": 698, "duration": "16h 20m", "stops": 1, "departure": "15:00", "arrival": "18:20+1", "baggage": "2x23kg", "class": "Economy", "seats_left": 8},
+        {"id": "f4",  "airline": "AC", "from": "YYZ", "to": "BOM", "price": 812, "duration": "19h 10m", "stops": 1, "departure": "19:30", "arrival": "23:40+1", "baggage": "2x23kg", "class": "Economy", "seats_left": 6},
+        {"id": "f5",  "airline": "AI", "from": "YVR", "to": "BOM", "price": 724, "duration": "16h 05m", "stops": 1, "departure": "01:00", "arrival": "07:05+1", "baggage": "2x23kg", "class": "Economy", "seats_left": 3},
+        {"id": "f6",  "airline": "BA", "from": "LHR", "to": "DEL", "price": 428, "duration": "08h 30m", "stops": 0, "departure": "09:30", "arrival": "23:00",   "baggage": "1x23kg", "class": "Economy", "seats_left": 15},
+        {"id": "f7",  "airline": "AI", "from": "LHR", "to": "BLR", "price": 445, "duration": "09h 50m", "stops": 0, "departure": "14:00", "arrival": "05:50+1", "baggage": "2x23kg", "class": "Economy", "seats_left": 9},
+        {"id": "f8",  "airline": "EK", "from": "DXB", "to": "COK", "price": 185, "duration": "03h 20m", "stops": 0, "departure": "07:00", "arrival": "11:20",   "baggage": "1x23kg", "class": "Economy", "seats_left": 22},
+        {"id": "f9",  "airline": "EY", "from": "DXB", "to": "BOM", "price": 210, "duration": "02h 55m", "stops": 0, "departure": "10:00", "arrival": "15:25",   "baggage": "1x23kg", "class": "Economy", "seats_left": 18},
+        {"id": "f10", "airline": "SQ", "from": "SYD", "to": "HYD", "price": 758, "duration": "12h 10m", "stops": 1, "departure": "22:00", "arrival": "13:10+1", "baggage": "2x23kg", "class": "Economy", "seats_left": 5},
+        {"id": "f11", "airline": "SQ", "from": "SIN", "to": "MAA", "price": 218, "duration": "03h 50m", "stops": 0, "departure": "06:00", "arrival": "08:00",   "baggage": "1x23kg", "class": "Economy", "seats_left": 30},
+        {"id": "f12", "airline": "6E", "from": "DEL", "to": "GOI", "price": 82,  "duration": "02h 35m", "stops": 0, "departure": "12:00", "arrival": "14:35",   "baggage": "1x15kg", "class": "Economy", "seats_left": 14},
+        {"id": "f13", "airline": "UK", "from": "GOI", "to": "BOM", "price": 65,  "duration": "01h 15m", "stops": 0, "departure": "16:00", "arrival": "17:15",   "baggage": "1x15kg", "class": "Economy", "seats_left": 20},
+        {"id": "f14", "airline": "TK", "from": "JFK", "to": "BOM", "price": 632, "duration": "15h 30m", "stops": 1, "departure": "18:00", "arrival": "20:30+1", "baggage": "2x23kg", "class": "Economy", "seats_left": 7},
+        {"id": "f15", "airline": "LH", "from": "LHR", "to": "DEL", "price": 467, "duration": "10h 20m", "stops": 1, "departure": "12:00", "arrival": "01:20+1", "baggage": "1x23kg", "class": "Economy", "seats_left": 11},
+]
 
-def extract_code(s):
-    import re
-    m = re.search(r"\(([A-Z]{3})\)", s)
-    return m.group(1) if m else s.upper().strip()[:3]
+def enrich(f: dict) -> dict:
+        a = AIRLINES.get(f["airline"], {})
+        return {**f, "airline_name": a.get("name", f["airline"]), "airline_logo": a.get("logo", ""), "alliance": a.get("alliance")}
+
+def extract_code(val: str) -> str:
+        if "(" in val and ")" in val:
+                    return val.split("(")[-1].replace(")", "").strip().upper()
+                return val.strip().upper()
+
+def search_flights(frm: str, to: str, sort: str = "price",
+                                      page: int = 1, limit: int = 10,
+                                      max_price: float = None, stops: int = None):
+                                              frm_code = extract_code(frm)
+                                              to_code  = extract_code(to)
+                                              results  = [f for f in FLIGHTS_DB if f["from"].upper() == frm_code and f["to"].upper() == to_code]
+                                              if max_price:
+                                                          results = [f for f in results if f["price"] >= max_price]
+                                                      if stops is not None:
+                                                                  results = [f for f in results if f["stops"] == stops]
+                                                              key_map = {"price": "price", "duration": "duration", "stops": "stops"}
+    results.sort(key=lambda f: f.get(key_map.get(sort, "price"), 0))
+    start = (page - 1) * limit
+    return [enrich(f) for f in results[start:start + limit]]
