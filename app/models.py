@@ -1,66 +1,58 @@
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
+from pydantic import BaseModel, EmailStr
+from typing import Optional, List
 
-# ===== AUTH =====
 class RegisterRequest(BaseModel):
-    name: str = Field(..., min_length=2)
-    email: str
-    password: str = Field(..., min_length=6)
+        name: str
+        email: EmailStr
+        password: str
 
 class LoginRequest(BaseModel):
-    email: str
-    password: str
-
-class UserPreferences(BaseModel):
-    currency: str = "CAD"
-    homeAirport: str = "YYZ"
-    notifications: bool = True
+        email: EmailStr
+        password: str
 
 class UserResponse(BaseModel):
-    id: str
-    name: str
-    email: str
-    preferences: UserPreferences
+        id: str
+        name: str
+        email: str
+        savedRoutes: List[str] = []
+        preferences: dict = {}
 
 class AuthResponse(BaseModel):
-    success: bool
-    message: str
-    token: str
-    user: UserResponse
-
-# ===== FLIGHTS =====
-class FlightSearchParams(BaseModel):
-    from_city: str = Field(..., alias="from")
-    to_city: str = Field(..., alias="to")
-    sort: str = "price"
+        access_token: str
+        token_type: str = "bearer"
+        user: UserResponse
 
 class MultiCityLeg(BaseModel):
-    from_city: str = Field(..., alias="from")
-    to_city: str = Field(..., alias="to")
-    date: Optional[str] = None
+        frm: str
+        to: str
+        date: Optional[str] = None
 
-    class Config:
-        populate_by_name = True
+    model_config = {"populate_by_name": True}
+
+    def __init__(self, **data):
+                if 'from' in data:
+                                data['frm'] = data.pop('from')
+                            super().__init__(**data)
 
 class MultiCityRequest(BaseModel):
-    legs: list[MultiCityLeg]
-
-# ===== BAGGAGE =====
-class BagItem(BaseModel):
-    weight: int = 23
+        legs: List[MultiCityLeg]
 
 class BaggageCalcRequest(BaseModel):
-    airline: str
-    bags: list[BagItem]
-
-# ===== TRIPS =====
-class TripDestination(BaseModel):
-    city: str
-    nights: int = 3
+        airline: str
+    bags: int
+    weight_per_bag: float = 23.0
+    route_type: str = "international"
 
 class TripPlanRequest(BaseModel):
-    travelers: int = Field(..., ge=1)
-    origin: str
-    destinations: list[TripDestination]
-    budget: Optional[int] = None
-    nights: int = 7
+        origin: str
+    destinations: List[str]
+    travelers: int = 2
+    budget: Optional[float] = None
+    nights: int = 14
+
+class FareAlertRequest(BaseModel):
+        frm: str
+    to: str
+    target_price: float
+    email: str
+    currency: str = "CAD"
