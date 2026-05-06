@@ -46,21 +46,21 @@ def enrich(f: dict) -> dict:
         return {**f, "airline_name": a.get("name", f["airline"]), "airline_logo": a.get("logo", ""), "alliance": a.get("alliance")}
 
 def extract_code(val: str) -> str:
-        if "(" in val and ")" in val:
-                    return val.split("(")[-1].replace(")", "").strip().upper()
-                return val.strip().upper()
+    if "(" in val and ")" in val:
+        return val.split("(")[-1].replace(")", "").strip().upper()
+    return val.strip().upper()
 
 def search_flights(frm: str, to: str, sort: str = "price",
-                                      page: int = 1, limit: int = 10,
-                                      max_price: float = None, stops: int = None):
-                                              frm_code = extract_code(frm)
-                                              to_code  = extract_code(to)
-                                              results  = [f for f in FLIGHTS_DB if f["from"].upper() == frm_code and f["to"].upper() == to_code]
-                                              if max_price:
-                                                          results = [f for f in results if f["price"] >= max_price]
-                                                      if stops is not None:
-                                                                  results = [f for f in results if f["stops"] == stops]
-                                                              key_map = {"price": "price", "duration": "duration", "stops": "stops"}
+                   page: int = 1, limit: int = 10,
+                   max_price: float = None, stops: int = None):
+    frm_code = extract_code(frm)
+    to_code  = extract_code(to)
+    results  = [f for f in FLIGHTS_DB if f["from"].upper() == frm_code and f["to"].upper() == to_code]
+    if max_price:
+        results = [f for f in results if f["price"] >= max_price]
+    if stops is not None:
+        results = [f for f in results if f["stops"] == stops]
+    key_map = {"price": "price", "duration": "duration", "stops": "stops"}
     results.sort(key=lambda f: f.get(key_map.get(sort, "price"), 0))
     start = (page - 1) * limit
     return [enrich(f) for f in results[start:start + limit]]
