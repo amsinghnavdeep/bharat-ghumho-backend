@@ -7,24 +7,24 @@ router = APIRouter()
 
 @router.get("/search")
 def search(
-        frm: str = Query(..., alias="from"),
-        to: str = Query(...),
-        sort: str = Query("price", enum=["price", "duration", "stops"]),
-        page: int = Query(1, ge=1),
-        limit: int = Query(10, ge=1, le=50),
-        max_price: Optional[float] = None,
-        stops: Optional[int] = Query(None, ge=0, le=3)
+    frm: str = Query(..., alias="from"),
+    to: str = Query(...),
+    sort: str = Query("price", enum=["price", "duration", "stops"]),
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=50),
+    max_price: Optional[float] = None,
+    stops: Optional[int] = Query(None, ge=0, le=3)
 ):
-        results = search_flights(frm, to, sort, page, limit, max_price, stops)
-        return {"results": results, "total": len(results), "page": page}
+    results = search_flights(frm, to, sort, page, limit, max_price, stops)
+    return {"results": results, "total": len(results), "page": page}
 
 @router.get("/routes")
 def get_routes():
-        return POPULAR_ROUTES
+    return POPULAR_ROUTES
 
 @router.get("/airlines")
 def get_airlines():
-        return [{"code": k, **v} for k, v in AIRLINES.items()]
+    return [{"code": k, **v} for k, v in AIRLINES.items()]
 
 @router.post("/multi-city")
 def multi_city(req: MultiCityRequest):
