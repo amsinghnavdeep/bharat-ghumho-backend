@@ -10,7 +10,13 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200", "http://localhost:3000", "*"],
+    allow_origins=[
+        "http://localhost:4200",
+        "http://localhost:3000",
+        "https://bharat-ghumho.netlify.app",
+        "https://69fcbb1f99415800087d6e74--bharat-ghumho.netlify.app",
+        "*"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
