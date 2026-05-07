@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from ..data.flights import FLIGHTS, AIRLINES, enrich, extract_code
+from ..data.flights import FLIGHTS_DB, AIRLINES, enrich, extract_code
 from ..data.hotels import HOTELS
 from ..middleware import get_optional_user
 
@@ -16,7 +16,7 @@ def plan_trip(data: dict, user=Depends(get_optional_user)):
     for i, dest in enumerate(destinations):
         dc = extract_code(dest.get("city", dest) if isinstance(dest, dict) else dest)
         nights = dest.get("nights", 3) if isinstance(dest, dict) else 3
-        flights = sorted([enrich(f) for f in FLIGHTS if f["fr"] == current and f["to"] == dc], key=lambda x: x["price"])
+        flights = sorted([enrich(f) for f in FLIGHTS_DB if f["from"] == current and f["to"] == dc], key=lambda x: x["price"])
         cheapest = flights[0] if flights else None
         hotels = sorted([h for h in HOTELS if h["code"] == dc], key=lambda x: x["price"])
         best_hotel = hotels[0] if hotels else None
@@ -31,7 +31,7 @@ def plan_trip(data: dict, user=Depends(get_optional_user)):
         plan["totalEstimate"] += fc + hc
         current = dc
     # Return leg
-    ret_flights = sorted([enrich(f) for f in FLIGHTS if f["fr"] == current and f["to"] == origin], key=lambda x: x["price"])
+    ret_flights = sorted([enrich(f) for f in FLIGHTS_DB if f["from"] == current and f["to"] == origin], key=lambda x: x["price"])
     if ret_flights:
         rc = ret_flights[0]["price"] * travelers
         plan["legs"].append({"leg": len(plan["legs"])+1, "from": current, "to": origin, "type": "return",
