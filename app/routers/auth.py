@@ -3,7 +3,7 @@ from ..models import RegisterRequest, LoginRequest
 from ..services.auth_service import register, login, get_user, update_prefs
 from ..middleware import get_current_user
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter()
 
 @router.post("/register")
 def do_register(req: RegisterRequest):

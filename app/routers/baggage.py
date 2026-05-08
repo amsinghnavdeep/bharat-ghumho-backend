@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from ..data.baggage import BAGGAGE_RULES
 
-router = APIRouter(prefix="/baggage", tags=["Baggage"])
+router = APIRouter()
 
 @router.get("/rules/{airline}")
 def get_rules(airline: str | None = None):
