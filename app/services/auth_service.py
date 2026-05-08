@@ -1,44 +1,84 @@
+"""SQLite-backed user store and auth helpers."""
+import json
+import uuid
 from passlib.context import CryptContext
 from ..middleware import create_token
+from .. import database
 
 pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
-users_db: list[dict] = []
-_counter = 0
 
-def get_next_id():
-    global _counter
-    _counter += 1
-    return f"USR-{_counter:04d}"
+
+DEFAULT_PREFS = {"currency": "CAD", "homeAirport": "YYZ", "notifications": True}
+
+
+def _new_id() -> str:
+    return f"USR-{uuid.uuid4().hex[:8].upper()}"
+
+
+def _row_to_user(row: dict) -> dict:
+    prefs = {}
+    if row.get("preferences"):
+        try:
+            prefs = json.loads(row["preferences"])
+        except (json.JSONDecodeError, TypeError):
+            prefs = {}
+    return {
+        "id": row["id"],
+        "name": row["name"],
+        "email": row["email"],
+        "preferences": prefs or DEFAULT_PREFS,
+    }
+
 
 def register(name: str, email: str, password: str):
     email = email.lower().strip()
-    if any(u["email"] == email for u in users_db):
+    existing = database.fetchone("SELECT id FROM users WHERE email = ?", (email,))
+    if existing:
         return None, "Email already registered"
-    user = {
-        "id": get_next_id(), "name": name.strip(), "email": email,
-        "password": pwd_ctx.hash(password),
-        "preferences": {"currency": "CAD", "homeAirport": "YYZ", "notifications": True}
-    }
-    users_db.append(user)
-    token = create_token({"sub": user["id"], "email": user["email"], "name": user["name"]})
-    return {"id": user["id"], "name": user["name"], "email": user["email"], "preferences": user["preferences"], "token": token}, None
+
+    user_id = _new_id()
+    database.execute(
+        "INSERT INTO users (id, name, email, password_hash, preferences) VALUES (?, ?, ?, ?, ?)",
+        (user_id, name.strip(), email, pwd_ctx.hash(password), json.dumps(DEFAULT_PREFS)),
+    )
+    token = create_token({"sub": user_id, "email": email, "name": name.strip()})
+    return {
+        "id": user_id, "name": name.strip(), "email": email,
+        "preferences": DEFAULT_PREFS, "token": token,
+    }, None
+
 
 def login(email: str, password: str):
     email = email.lower().strip()
-    user = next((u for u in users_db if u["email"] == email), None)
-    if not user or not pwd_ctx.verify(password, user["password"]):
+    row = database.fetchone(
+        "SELECT id, name, email, password_hash, preferences FROM users WHERE email = ?",
+        (email,),
+    )
+    if not row or not pwd_ctx.verify(password, row["password_hash"]):
         return None, "Invalid credentials"
+    user = _row_to_user(row)
     token = create_token({"sub": user["id"], "email": user["email"], "name": user["name"]})
-    return {"id": user["id"], "name": user["name"], "email": user["email"], "preferences": user["preferences"], "token": token}, None
+    return {**user, "token": token}, None
+
 
 def get_user(user_id: str):
-    return next((u for u in users_db if u["id"] == user_id), None)
+    row = database.fetchone(
+        "SELECT id, name, email, password_hash, preferences FROM users WHERE id = ?",
+        (user_id,),
+    )
+    return _row_to_user(row) if row else None
+
 
 def update_prefs(user_id: str, prefs: dict):
     user = get_user(user_id)
     if not user:
         return None
-    for k in ["currency", "homeAirport", "notifications"]:
+    merged = {**user["preferences"]}
+    for k in ("currency", "homeAirport", "notifications"):
         if k in prefs:
-            user["preferences"][k] = prefs[k]
-    return user["preferences"]
+            merged[k] = prefs[k]
+    database.execute(
+        "UPDATE users SET preferences = ? WHERE id = ?",
+        (json.dumps(merged), user_id),
+    )
+    return merged
