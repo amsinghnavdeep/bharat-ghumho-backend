@@ -3,7 +3,7 @@ from ..data.flights import FLIGHTS_DB, AIRLINES, enrich, extract_code
 from ..data.hotels import HOTELS
 from ..middleware import get_optional_user
 
-router = APIRouter(prefix="/trips", tags=["Trips"])
+router = APIRouter()
 
 @router.post("/plan")
 def plan_trip(data: dict, user=Depends(get_optional_user)):

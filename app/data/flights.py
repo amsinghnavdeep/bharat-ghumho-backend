@@ -57,7 +57,7 @@ def search_flights(frm: str, to: str, sort: str = "price",
     to_code  = extract_code(to)
     results  = [f for f in FLIGHTS_DB if f["from"].upper() == frm_code and f["to"].upper() == to_code]
     if max_price:
-        results = [f for f in results if f["price"] >= max_price]
+        results = [f for f in results if f["price"] <= max_price]
     if stops is not None:
         results = [f for f in results if f["stops"] == stops]
     key_map = {"price": "price", "duration": "duration", "stops": "stops"}

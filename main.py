@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import flights, auth, baggage, trips
+from app.routers import flights, auth, baggage, trips, hotels
 
 app = FastAPI(
     title="Bharat Ghumho API",
@@ -20,6 +20,7 @@ app.include_router(flights.router, prefix="/api/flights", tags=["flights"])
 app.include_router(auth.router,    prefix="/api/auth",    tags=["auth"])
 app.include_router(baggage.router, prefix="/api/baggage", tags=["baggage"])
 app.include_router(trips.router,   prefix="/api/trips",   tags=["trips"])
+app.include_router(hotels.router, prefix="/api/hotels", tags=["hotels"])
 
 @app.get("/api/health")
 def health():

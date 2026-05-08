@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query
 from ..data.hotels import HOTELS
 
-router = APIRouter(prefix="/hotels", tags=["Hotels"])
+router = APIRouter()
 
 @router.get("/search")
 def search_hotels(city: str | None = None, code: str | None = None, min_stars: int | None = None,
