@@ -60,7 +60,7 @@ def list_bookings(user=Depends(get_current_user)):
         "SELECT * FROM bookings WHERE user_id = ? ORDER BY created_at DESC",
         (user["sub"],),
     )
-    return {"success": True, "count": len(rows), "bookings": [_row_to_booking(r) for r in rows]}
+    return {"success": True, "count": len(rows), "results": [_row_to_booking(r) for r in rows]}
 
 
 @router.get("/")
