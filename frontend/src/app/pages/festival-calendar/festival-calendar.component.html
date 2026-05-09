@@ -1,0 +1,198 @@
+<div class="fc-page">
+  <!-- Header -->
+  <header class="fc-header">
+    <div class="fc-header-mandala" aria-hidden="true">
+      <svg viewBox="0 0 300 300" class="fc-mandala-svg">
+        <defs>
+          <radialGradient id="fcGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#D4A843" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#FF6B00" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <circle cx="150" cy="150" r="140" fill="url(#fcGlow)"/>
+        <circle cx="150" cy="150" r="120" fill="none" stroke="rgba(212,168,67,0.2)" stroke-width="1"/>
+        <circle cx="150" cy="150" r="90" fill="none" stroke="rgba(255,107,0,0.15)" stroke-width="1" stroke-dasharray="6 4"/>
+        <circle cx="150" cy="150" r="60" fill="none" stroke="rgba(212,168,67,0.2)" stroke-width="1"/>
+        <g transform="translate(150,150)" class="fc-petals">
+          <ellipse rx="10" ry="32" fill="rgba(212,168,67,0.18)" stroke="rgba(212,168,67,0.4)" stroke-width="0.8" transform="rotate(0) translate(0,-75)"/>
+          <ellipse rx="10" ry="32" fill="rgba(212,168,67,0.18)" stroke="rgba(212,168,67,0.4)" stroke-width="0.8" transform="rotate(45) translate(0,-75)"/>
+          <ellipse rx="10" ry="32" fill="rgba(212,168,67,0.18)" stroke="rgba(212,168,67,0.4)" stroke-width="0.8" transform="rotate(90) translate(0,-75)"/>
+          <ellipse rx="10" ry="32" fill="rgba(212,168,67,0.18)" stroke="rgba(212,168,67,0.4)" stroke-width="0.8" transform="rotate(135) translate(0,-75)"/>
+          <ellipse rx="10" ry="32" fill="rgba(212,168,67,0.18)" stroke="rgba(212,168,67,0.4)" stroke-width="0.8" transform="rotate(180) translate(0,-75)"/>
+          <ellipse rx="10" ry="32" fill="rgba(212,168,67,0.18)" stroke="rgba(212,168,67,0.4)" stroke-width="0.8" transform="rotate(225) translate(0,-75)"/>
+          <ellipse rx="10" ry="32" fill="rgba(212,168,67,0.18)" stroke="rgba(212,168,67,0.4)" stroke-width="0.8" transform="rotate(270) translate(0,-75)"/>
+          <ellipse rx="10" ry="32" fill="rgba(212,168,67,0.18)" stroke="rgba(212,168,67,0.4)" stroke-width="0.8" transform="rotate(315) translate(0,-75)"/>
+        </g>
+        <circle cx="150" cy="150" r="12" fill="rgba(255,107,0,0.25)" stroke="rgba(212,168,67,0.6)" stroke-width="1.5"/>
+        <circle cx="150" cy="150" r="4" fill="#D4A843"/>
+      </svg>
+    </div>
+    <div class="w">
+      <div class="fc-header-content">
+        <div class="fc-deva">त्योहार कैलेंडर</div>
+        <div class="fc-tag"><span>🪔</span> Festival Calendar</div>
+        <h1>Book at the <em class="fc-em">right time</em>,<br>save hundreds.</h1>
+        <p>Indian festivals spike fares by 25–55%. Our calendar shows exactly when to buy for each corridor — so you never overpay for going home.</p>
+        <div class="fc-tip-row">
+          <div class="fc-tip"><span class="ft-icon">📅</span><span>Book windows vary by festival</span></div>
+          <div class="fc-tip"><span class="ft-icon">💰</span><span>Avg ₹{{avgSavings}} saved per trip</span></div>
+          <div class="fc-tip"><span class="ft-icon">🔔</span><span>Set fare alerts for any corridor</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-wave-bottom" aria-hidden="true">
+      <svg viewBox="0 0 1440 60" preserveAspectRatio="none">
+        <path d="M0,60 L0,30 Q240,0 480,30 Q720,60 960,30 Q1200,0 1440,30 L1440,60 Z" fill="var(--cream)"/>
+      </svg>
+    </div>
+  </header>
+
+  <div class="w fc-body">
+    <!-- Festival selector cards -->
+    <div class="fc-selector" *ngIf="!loading()">
+      <div *ngFor="let f of festivals()"
+           class="fc-sel-card"
+           [class.active]="selectedId() === f.id"
+           (click)="selectFestival(f.id)">
+        <div class="fsc-icon" [style.background]="f.color + '18'" [style.border-color]="f.color + '40'">
+          <span>{{f.icon}}</span>
+        </div>
+        <div class="fsc-body">
+          <strong class="fsc-name">{{f.name}}</strong>
+          <span class="fsc-surge" [style.color]="f.color">+{{f.avg_surge}}% surge</span>
+        </div>
+        <div class="fsc-book">
+          <span class="fsc-book-label">Book by</span>
+          <span class="fsc-book-val">{{f.best_book_window}}</span>
+        </div>
+        <div class="fsc-active-dot" *ngIf="selectedId() === f.id"></div>
+      </div>
+    </div>
+
+    <!-- Loading skeletons -->
+    <div class="fc-skeleton" *ngIf="loading()">
+      <div class="fsk-row" *ngFor="let _ of [1,2,3,4,5,6]">
+        <div class="sk-box w60"></div><div class="sk-box w40"></div>
+      </div>
+    </div>
+
+    <!-- Detail panel -->
+    <div class="fc-detail" *ngIf="detail() && !detailLoading()">
+      <!-- Festival hero banner -->
+      <div class="fc-banner" [style.border-color]="detail()!.color + '50'">
+        <div class="fc-banner-bg" [style.background]="'linear-gradient(135deg,' + detail()!.color + '14 0%, transparent 60%)'"></div>
+        <div class="fc-banner-icon">{{detail()!.icon}}</div>
+        <div class="fc-banner-info">
+          <h2>{{detail()!.name}}</h2>
+          <p>{{detail()!.desc}}</p>
+          <div class="fc-banner-meta">
+            <div class="fc-bm-item">
+              <span class="fc-bml">Best booking window</span>
+              <span class="fc-bmv">{{detail()!.best_book_window}}</span>
+            </div>
+            <div class="fc-bm-item">
+              <span class="fc-bml">Average fare surge</span>
+              <span class="fc-bmv surge" [style.color]="detail()!.color">+{{detail()!.avg_surge}}%</span>
+            </div>
+            <div class="fc-bm-item">
+              <span class="fc-bml">Key corridors</span>
+              <span class="fc-bmv">{{detail()!.corridor_count}} routes</span>
+            </div>
+          </div>
+        </div>
+        <!-- Peak date pills -->
+        <div class="fc-peak-dates">
+          <span class="fc-peak-label">Peak dates:</span>
+          <span class="fc-peak-pill" *ngFor="let d of detail()!.peak_dates | slice:0:5"
+                [style.background]="detail()!.color + '20'"
+                [style.border-color]="detail()!.color + '40'"
+                [style.color]="detail()!.color">
+            {{formatDate(d)}}
+          </span>
+          <span class="fc-peak-more" *ngIf="detail()!.peak_dates.length > 5">+{{detail()!.peak_dates.length - 5}} more</span>
+        </div>
+      </div>
+
+      <!-- Corridor fare cards -->
+      <div class="fc-corridors-head">
+        <h3>Fare outlook by corridor</h3>
+        <p>Click any route to see the fare trend and set a price alert.</p>
+      </div>
+      <div class="fc-corridors-grid">
+        <div *ngFor="let c of detail()!.corridors; let i = index"
+             class="fc-corridor-card"
+             [class.expanded]="expandedCorridor() === i"
+             (click)="toggleCorridor(i)">
+          <div class="fcc-head">
+            <div class="fcc-flags">
+              <span class="fcc-flag">{{c.flag}}</span>
+              <span class="fcc-arrow">→</span>
+              <span class="fcc-flag">🇮🇳</span>
+            </div>
+            <div class="fcc-route">
+              <span class="fcc-codes">{{c.from_code}} → {{c.to_code}}</span>
+              <span class="fcc-cities">{{c.from}} → {{c.to}}</span>
+            </div>
+            <div class="fcc-fares">
+              <div class="fcc-fare-now">
+                <span class="fcc-fl">Book now</span>
+                <span class="fcc-fv green">from ${{c.base_fare}}</span>
+              </div>
+              <div class="fcc-fare-peak">
+                <span class="fcc-fl">At peak</span>
+                <span class="fcc-fv red">~${{c.peak_fare}}</span>
+              </div>
+            </div>
+            <div class="fcc-save">
+              <span class="fcc-save-label">Save up to</span>
+              <span class="fcc-save-amt">${{c.savings_if_early}}</span>
+            </div>
+            <div class="fcc-chevron">{{expandedCorridor() === i ? '▲' : '▼'}}</div>
+          </div>
+
+          <!-- Expanded fare trend chart -->
+          <div class="fcc-trend" *ngIf="expandedCorridor() === i">
+            <div class="fcc-trend-label">Fare trend — weeks before festival (left = book early = cheapest)</div>
+            <div class="fcc-chart">
+              <div *ngFor="let t of c.trend; let j = index" class="fcc-bar-col">
+                <div class="fcc-bar"
+                     [style.height]="getBarHeight(c.trend, t.fare) + '%'"
+                     [style.background]="getBarColor(c.trend, t.fare, detail()!.color)">
+                  <span class="fcc-bar-tip" *ngIf="j % 3 === 0">${{t.fare}}</span>
+                </div>
+                <span class="fcc-bar-label" *ngIf="j % 3 === 0">{{t.weeks_out}}w</span>
+              </div>
+            </div>
+            <div class="fcc-trend-insight">
+              <span class="fti-icon">💡</span>
+              <span>Best price window: <strong>{{detail()!.best_book_window}}</strong> before {{detail()!.name}}. After that fares rise ~{{detail()!.avg_surge}}%.</span>
+            </div>
+            <div class="fcc-actions">
+              <button class="fcc-alert-btn" (click)="setAlert(c, $event)">
+                🔔 Set fare alert for this route
+              </button>
+              <a routerLink="/flights" class="fcc-search-btn">✈ Search {{c.from_code}} → {{c.to_code}}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail loading skeleton -->
+    <div class="fc-detail-skeleton" *ngIf="detailLoading()">
+      <div class="fds-banner sk-pulse"></div>
+      <div class="fds-grid">
+        <div class="fds-card sk-pulse" *ngFor="let _ of [1,2,3,4]"></div>
+      </div>
+    </div>
+
+    <!-- CTA strip -->
+    <div class="fc-cta-strip" *ngIf="!loading()">
+      <div class="fc-cta-left">
+        <strong>Never miss the booking window again</strong>
+        <span>Set fare alerts on any route — we'll ping you when prices hit your target.</span>
+      </div>
+      <a routerLink="/flights" class="fc-cta-btn">✈ Start searching</a>
+    </div>
+  </div>
+</div>

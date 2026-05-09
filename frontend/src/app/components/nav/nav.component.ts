@@ -36,6 +36,7 @@ import { ThemeService } from '../../services/theme.service';
     <a routerLink="/cars" routerLinkActive="active" class="nav-link"><span class="nl-icon">🚗</span><span>Cars</span></a>
     <a routerLink="/holidays" routerLinkActive="active" class="nav-link"><span class="nl-icon">🏝</span><span>Holidays</span></a>
     <a routerLink="/trip-planner" routerLinkActive="active" class="nav-link nav-link-special"><span class="nl-icon">🗺</span><span>Trip Planner</span></a>
+    <a routerLink="/festival-calendar" routerLinkActive="active" class="nav-link nav-link-festival"><span class="nl-icon">🪔</span><span>Festivals</span></a>
   </div>
   <div class="nav-right">
     <button class="nav-theme-toggle" (click)="theme.toggle()" [title]="theme.theme()==='dark' ? 'Switch to light' : 'Switch to dark'" aria-label="Toggle theme">
@@ -85,6 +86,7 @@ import { ThemeService } from '../../services/theme.service';
   <a routerLink="/cars" routerLinkActive="active" (click)="closeMobile()"><span class="ic">🚗</span> Cars</a>
   <a routerLink="/holidays" routerLinkActive="active" (click)="closeMobile()"><span class="ic">🏝</span> Holidays</a>
   <a routerLink="/trip-planner" routerLinkActive="active" (click)="closeMobile()"><span class="ic">🗺</span> Trip Planner</a>
+  <a routerLink="/festival-calendar" routerLinkActive="active" (click)="closeMobile()"><span class="ic">🪔</span> Festival Calendar</a>
   <ng-container *ngIf="auth.isAuthenticated()">
     <div class="drawer-divider"></div>
     <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMobile()"><span class="ic">📊</span> Dashboard</a>
@@ -121,6 +123,8 @@ import { ThemeService } from '../../services/theme.service';
     .nl-icon{font-size:11px;opacity:.6;margin-right:3px}
     .nav-link-special{background:linear-gradient(135deg,rgba(212,168,67,.1),rgba(255,107,0,.08));border:1px solid rgba(212,168,67,.2);border-radius:8px}
     .nav-link-special.active{background:linear-gradient(135deg,rgba(212,168,67,.2),rgba(255,107,0,.15));border-color:rgba(212,168,67,.4)}
+    .nav-link-festival{background:linear-gradient(135deg,rgba(255,107,0,.1),rgba(245,166,35,.08));border:1px solid rgba(255,107,0,.2);border-radius:8px}
+    .nav-link-festival.active{background:linear-gradient(135deg,rgba(255,107,0,.2),rgba(245,166,35,.15));border-color:rgba(255,107,0,.45)}
     .cur-select{padding:8px 10px;border:1px solid rgba(255,255,255,.12);border-radius:8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.06);color:var(--white);cursor:pointer;outline:none}
     .cur-select:focus{border-color:var(--gold)}
     .user-menu{position:relative}

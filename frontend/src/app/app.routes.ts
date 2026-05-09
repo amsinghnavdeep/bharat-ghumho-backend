@@ -10,6 +10,7 @@ export const routes: Routes = [
   { path: 'holidays', loadComponent: () => import('./pages/holidays/holidays.component').then(m => m.HolidaysComponent) },
   { path: 'destination/:code', loadComponent: () => import('./pages/destination/destination.component').then(m => m.DestinationComponent) },
   { path: 'trip-planner', loadComponent: () => import('./pages/trip-planner/trip-planner.component').then(m => m.TripPlannerComponent) },
+  { path: 'festival-calendar', loadComponent: () => import('./pages/festival-calendar/festival-calendar.component').then(m => m.FestivalCalendarComponent) },
   {
     path: 'dashboard',
     canActivate: [authGuard],

@@ -5,7 +5,7 @@ from app import database
 from app.routers import (
     flights, auth, baggage, trips, hotels,
     cars, holidays, weather, currency, places, visa,
-    bookings, alerts, reviews, favorites,
+    bookings, alerts, reviews, favorites, festival,
 )
 
 
@@ -45,6 +45,7 @@ app.include_router(bookings.router,  prefix="/api/bookings",  tags=["bookings"])
 app.include_router(alerts.router,    prefix="/api/alerts",    tags=["alerts"])
 app.include_router(reviews.router,   prefix="/api/reviews",   tags=["reviews"])
 app.include_router(favorites.router, prefix="/api/favorites", tags=["favorites"])
+app.include_router(festival.router,  prefix="/api/festivals",  tags=["festivals"])
 
 
 @app.get("/api/health")
