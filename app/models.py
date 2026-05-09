@@ -101,3 +101,11 @@ class SaveTripRequest(BaseModel):
     destinations: List[Dict[str, Any]]
     travelers: int = Field(1, ge=1)
     budget: Optional[float] = None
+
+
+class UpdateTripRequest(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=120)
+    origin: Optional[str] = None
+    destinations: Optional[List[Dict[str, Any]]] = None
+    travelers: Optional[int] = Field(None, ge=1)
+    budget: Optional[float] = None

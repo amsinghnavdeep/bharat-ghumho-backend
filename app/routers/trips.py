@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from ..data.flights import FLIGHTS_DB, AIRLINES, enrich, extract_code
 from ..data.hotels import HOTELS
 from ..middleware import get_current_user, get_optional_user
-from ..models import SaveTripRequest
+from ..models import SaveTripRequest, UpdateTripRequest
 from .. import database
 
 router = APIRouter()
@@ -101,6 +101,52 @@ def get_saved_trip(trip_id: str, user=Depends(get_current_user)):
     if not row:
         raise HTTPException(status_code=404, detail="Saved trip not found")
     return {"success": True, "trip": _row_to_saved_trip(row)}
+
+
+@router.put("/saved/{trip_id}")
+def update_saved_trip(trip_id: str, req: UpdateTripRequest, user=Depends(get_current_user)):
+    row = database.fetchone(
+        "SELECT * FROM saved_trips WHERE id = ? AND user_id = ?",
+        (trip_id, user["sub"]),
+    )
+    if not row:
+        raise HTTPException(status_code=404, detail="Saved trip not found")
+
+    current_plan = json.loads(row["plan"])
+
+    new_name = req.name if req.name is not None else row["name"]
+
+    needs_replan = any(v is not None for v in [req.origin, req.destinations, req.travelers, req.budget])
+    if needs_replan:
+        current_plan_data = {
+            "travelers": current_plan.get("travelers", 1),
+            "origin": current_plan.get("origin", ""),
+            "destinations": [],
+            "budget": None,
+        }
+        for leg in current_plan.get("legs", []):
+            if leg.get("type") != "return":
+                current_plan_data["destinations"].append({
+                    "city": leg.get("to", ""),
+                    "nights": leg.get("nights", 3),
+                })
+
+        merged = {
+            "travelers": req.travelers if req.travelers is not None else current_plan_data["travelers"],
+            "origin": req.origin if req.origin is not None else current_plan_data["origin"],
+            "destinations": req.destinations if req.destinations is not None else current_plan_data["destinations"],
+            "budget": req.budget if req.budget is not None else current_plan_data["budget"],
+        }
+        new_plan = _build_plan(merged)
+    else:
+        new_plan = current_plan
+
+    database.execute(
+        "UPDATE saved_trips SET name = ?, plan = ? WHERE id = ?",
+        (new_name, json.dumps(new_plan), trip_id),
+    )
+    updated = database.fetchone("SELECT * FROM saved_trips WHERE id = ?", (trip_id,))
+    return {"success": True, "trip": _row_to_saved_trip(updated)}
 
 
 @router.delete("/saved/{trip_id}")
