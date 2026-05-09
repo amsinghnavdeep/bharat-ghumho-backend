@@ -93,3 +93,11 @@ class ReviewCreate(BaseModel):
     title: Optional[str] = None
     body: str
     author: Optional[str] = None
+
+
+class SaveTripRequest(BaseModel):
+    name: str = Field(..., min_length=1, max_length=120, description="A label for this saved trip")
+    origin: str
+    destinations: List[Dict[str, Any]]
+    travelers: int = Field(1, ge=1)
+    budget: Optional[float] = None
