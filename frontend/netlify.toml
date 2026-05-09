@@ -1,0 +1,14 @@
+[build]
+  # Retry `npm ci` once: esbuild's postinstall occasionally fails on Netlify
+  # with `ETXTBSY` (text file busy) when the freshly-extracted binary is
+  # spawned to verify its version. A second attempt almost always succeeds.
+  command = "npm ci || npm ci"
+  publish = "dist/bharat-gumho/browser"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
