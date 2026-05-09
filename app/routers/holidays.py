@@ -13,7 +13,7 @@ def list_packages(
     sort: str = Query("popular", enum=["popular", "price-low", "price-high", "rating"]),
 ):
     results = search_packages(theme=theme, max_budget=budget, days=days, q=q, sort=sort)
-    return {"success": True, "count": len(results), "packages": results}
+    return {"success": True, "count": len(results), "results": results}
 
 
 @router.get("/")

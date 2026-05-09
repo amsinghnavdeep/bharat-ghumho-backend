@@ -61,7 +61,7 @@ def list_favorites(type: str | None = None, user=Depends(get_current_user)):
             "SELECT * FROM favorites WHERE user_id = ? ORDER BY created_at DESC",
             (user["sub"],),
         )
-    return {"success": True, "count": len(rows), "favorites": [_row_to_fav(r) for r in rows]}
+    return {"success": True, "count": len(rows), "results": [_row_to_fav(r) for r in rows]}
 
 
 @router.get("/")

@@ -63,7 +63,7 @@ class FareAlertRequest(BaseModel):
     frm: str
     to: str
     target_price: float
-    email: str
+    email: str = ""
     currency: str = "CAD"
 
 

@@ -42,8 +42,53 @@ FLIGHTS_DB = [
 ]
 
 def enrich(f: dict) -> dict:
-        a = AIRLINES.get(f["airline"], {})
-        return {**f, "airline_name": a.get("name", f["airline"]), "airline_logo": a.get("logo", ""), "alliance": a.get("alliance")}
+    a = AIRLINES.get(f["airline"], {})
+    stops = f.get("stops", 0)
+    dur_str = f.get("duration", "0h 0m")
+    parts = dur_str.replace("h", "").replace("m", "").split()
+    dur_min = int(parts[0]) * 60 + int(parts[1]) if len(parts) == 2 else 0
+
+    colors = {"AI": "#E23D28", "BA": "#2E5C99", "EK": "#D71921", "AC": "#F01428",
+              "QR": "#5C0632", "LH": "#05164D", "SQ": "#F0AB00", "TK": "#C8102E",
+              "6E": "#3F0F8F", "UK": "#6A1B4D", "WS": "#00A651", "EY": "#BD8B13"}
+
+    arr = f.get("arrival", "")
+    arr_day = ""
+    if "+1" in arr:
+        arr_day = "+1 day"
+        arr = arr.replace("+1", "").strip()
+
+    stops_label = "Direct" if stops == 0 else f"{stops} stop{'s' if stops > 1 else ''}"
+    stops_class = "direct" if stops == 0 else "one-stop"
+
+    return {
+        "id": f["id"],
+        "airline": a.get("name", f["airline"]),
+        "code": f["airline"],
+        "flight": f"{f['airline']}-{f['id'].replace('f','')}",
+        "aircraft": f.get("class", "Economy"),
+        "color": colors.get(f["airline"], "#333"),
+        "from": f["from"],
+        "to": f["to"],
+        "fromCity": f["from"],
+        "toCity": f["to"],
+        "depTime": f.get("departure", ""),
+        "arrTime": arr,
+        "arrDay": arr_day,
+        "duration": dur_str,
+        "durationMin": dur_min,
+        "stops": stops,
+        "stopCities": [],
+        "stopsLabel": stops_label,
+        "stopsClass": stops_class,
+        "price": f["price"],
+        "cabin": f.get("class", "Economy"),
+        "meals": True,
+        "wifi": stops == 0,
+        "entertainment": True,
+        "baggage": f.get("baggage", ""),
+        "seatsLeft": f.get("seats_left", 0),
+    }
 
 def extract_code(val: str) -> str:
     if "(" in val and ")" in val:
