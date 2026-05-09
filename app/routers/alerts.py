@@ -51,7 +51,7 @@ def list_alerts(user=Depends(get_optional_user)):
         rows = database.fetchall(
             "SELECT * FROM fare_alerts ORDER BY created_at DESC LIMIT 50",
         )
-    return {"success": True, "count": len(rows), "alerts": [_row_to_alert(r) for r in rows]}
+    return {"success": True, "count": len(rows), "results": [_row_to_alert(r) for r in rows]}
 
 
 @router.get("/")
