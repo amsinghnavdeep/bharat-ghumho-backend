@@ -44,11 +44,6 @@ def add_favorite(req: FavoriteCreate, user=Depends(get_current_user)):
     return {"success": True, "favorite": _row_to_fav(row)}
 
 
-@router.post("/")
-def add_favorite_slash(req: FavoriteCreate, user=Depends(get_current_user)):
-    return add_favorite(req, user)
-
-
 @router.get("")
 def list_favorites(type: str | None = None, user=Depends(get_current_user)):
     if type:
@@ -62,11 +57,6 @@ def list_favorites(type: str | None = None, user=Depends(get_current_user)):
             (user["sub"],),
         )
     return {"success": True, "count": len(rows), "favorites": [_row_to_fav(r) for r in rows]}
-
-
-@router.get("/")
-def list_favorites_slash(type: str | None = None, user=Depends(get_current_user)):
-    return list_favorites(type, user)
 
 
 @router.delete("/{fav_id}")

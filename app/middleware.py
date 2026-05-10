@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Optional
 from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -11,7 +12,7 @@ def create_token(data: dict) -> str:
     to_encode["exp"] = datetime.utcnow() + timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
     return jwt.encode(to_encode, config.SECRET_KEY, algorithm=config.ALGORITHM)
 
-def verify_token(token: str) -> dict | None:
+def verify_token(token: str) -> Optional[dict]:
     try:
         return jwt.decode(token, config.SECRET_KEY, algorithms=[config.ALGORITHM])
     except JWTError:

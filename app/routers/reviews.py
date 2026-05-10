@@ -38,11 +38,6 @@ def create_review(req: ReviewCreate, user=Depends(get_optional_user)):
     return {"success": True, "review": _row_to_review(row)}
 
 
-@router.post("/")
-def create_review_slash(req: ReviewCreate, user=Depends(get_optional_user)):
-    return create_review(req, user)
-
-
 @router.get("/{entity_type}/{entity_id}")
 def list_reviews(entity_type: str, entity_id: str):
     rows = database.fetchall(

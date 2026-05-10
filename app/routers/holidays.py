@@ -16,17 +16,6 @@ def list_packages(
     return {"success": True, "count": len(results), "packages": results}
 
 
-@router.get("/")
-def list_packages_slash(
-    theme: str | None = None,
-    budget: float | None = Query(None, ge=0),
-    days: int | None = Query(None, ge=1),
-    q: str | None = None,
-    sort: str = Query("popular", enum=["popular", "price-low", "price-high", "rating"]),
-):
-    return list_packages(theme=theme, budget=budget, days=days, q=q, sort=sort)
-
-
 @router.get("/themes")
 def themes():
     seen: list[str] = []

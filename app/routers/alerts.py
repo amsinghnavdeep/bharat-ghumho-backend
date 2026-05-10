@@ -35,11 +35,6 @@ def create_alert(req: FareAlertRequest, user=Depends(get_optional_user)):
     return {"success": True, "alert": _row_to_alert(row)}
 
 
-@router.post("/")
-def create_alert_slash(req: FareAlertRequest, user=Depends(get_optional_user)):
-    return create_alert(req, user)
-
-
 @router.get("")
 def list_alerts(user=Depends(get_optional_user)):
     if user:
@@ -52,11 +47,6 @@ def list_alerts(user=Depends(get_optional_user)):
             "SELECT * FROM fare_alerts ORDER BY created_at DESC LIMIT 50",
         )
     return {"success": True, "count": len(rows), "results": [_row_to_alert(r) for r in rows]}
-
-
-@router.get("/")
-def list_alerts_slash(user=Depends(get_optional_user)):
-    return list_alerts(user)
 
 
 @router.delete("/{alert_id}")
