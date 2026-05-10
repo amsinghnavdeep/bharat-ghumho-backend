@@ -7,14 +7,37 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
 <section class="features" id="features">
-  <!-- Paisley background -->
-  <div class="features-pattern pat-paisley" aria-hidden="true"></div>
+  <!-- Kalamkari lotus & vine background -->
+  <div class="features-pattern pat-kalamkari" aria-hidden="true"></div>
+
+  <!-- Madhubani-style border line at top -->
+  <div class="features-border-top" aria-hidden="true">
+    <svg viewBox="0 0 1440 18" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,9 C30,3 60,15 90,9 C120,3 150,15 180,9 C210,3 240,15 270,9 C300,3 330,15 360,9 C390,3 420,15 450,9 C480,3 510,15 540,9 C570,3 600,15 630,9 C660,3 690,15 720,9 C750,3 780,15 810,9 C840,3 870,15 900,9 C930,3 960,15 990,9 C1020,3 1050,15 1080,9 C1110,3 1140,15 1170,9 C1200,3 1230,15 1260,9 C1290,3 1320,15 1350,9 C1380,3 1410,15 1440,9" fill="none" stroke="rgba(201,145,26,0.35)" stroke-width="1.8"/>
+      <path d="M0,14 C40,8 80,20 120,14 C160,8 200,20 240,14 C280,8 320,20 360,14 C400,8 440,20 480,14 C520,8 560,20 600,14 C640,8 680,20 720,14 C760,8 800,20 840,14 C880,8 920,20 960,14 C1000,8 1040,20 1080,14 C1120,8 1160,20 1200,14 C1240,8 1280,20 1320,14 C1360,8 1400,20 1440,14" fill="none" stroke="rgba(201,145,26,0.18)" stroke-width="1"/>
+    </svg>
+  </div>
+
   <div class="w">
     <div class="sec-head sr">
-      <div class="sec-tag gd">
-        <span class="tag-lotus">✿</span> Crafted for Desis
+      <!-- Torana arch framing the tag -->
+      <div class="torana-frame">
+        <div class="sec-tag gd">
+          <span class="tag-lotus">✿</span> Crafted for Desis
+        </div>
       </div>
       <h2 class="sec-title">Built for the way<br><em class="display-italic">Indians travel.</em></h2>
+      <!-- Madhubani divider under title -->
+      <div class="madhubani-title-line" aria-hidden="true">
+        <svg viewBox="0 0 320 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="10" x2="130" y2="10" stroke="rgba(201,145,26,0.3)" stroke-width="1"/>
+          <ellipse cx="160" cy="10" rx="12" ry="6" stroke="rgba(201,145,26,0.5)" stroke-width="1.2"/>
+          <circle cx="145" cy="10" r="3" fill="rgba(201,145,26,0.35)"/>
+          <circle cx="175" cy="10" r="3" fill="rgba(201,145,26,0.35)"/>
+          <circle cx="160" cy="10" r="2" fill="rgba(201,145,26,0.5)"/>
+          <line x1="190" y1="10" x2="320" y2="10" stroke="rgba(201,145,26,0.3)" stroke-width="1"/>
+        </svg>
+      </div>
       <p class="sec-sub">Not another booking engine. A platform that understands multi-city family trips, wedding season, and 40kg suitcases.</p>
     </div>
     <div class="feat-grid">

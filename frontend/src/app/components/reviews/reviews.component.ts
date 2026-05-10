@@ -10,18 +10,54 @@ import { CommonModule } from '@angular/common';
   <div class="reviews-pattern" aria-hidden="true"></div>
   <div class="w">
     <div class="sec-head sr">
-      <div class="sec-tag sf"><span class="tag-lotus">✿</span> Traveller Stories</div>
+      <div class="torana-frame">
+        <div class="sec-tag sf"><span class="tag-lotus">✿</span> Traveller Stories</div>
+      </div>
       <h2 class="sec-title">Trusted by thousands<br><em class="display-italic">going home.</em></h2>
+      <div class="madhubani-title-line" aria-hidden="true">
+        <svg viewBox="0 0 320 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="10" x2="130" y2="10" stroke="rgba(255,107,0,0.25)" stroke-width="1"/>
+          <ellipse cx="160" cy="10" rx="12" ry="6" stroke="rgba(255,107,0,0.45)" stroke-width="1.2"/>
+          <circle cx="145" cy="10" r="3" fill="rgba(255,107,0,0.3)"/>
+          <circle cx="175" cy="10" r="3" fill="rgba(255,107,0,0.3)"/>
+          <circle cx="160" cy="10" r="2" fill="rgba(255,107,0,0.5)"/>
+          <line x1="190" y1="10" x2="320" y2="10" stroke="rgba(255,107,0,0.25)" stroke-width="1"/>
+        </svg>
+      </div>
       <p class="sec-sub">Real stories from the Indian diaspora who found a better way to book their journey back home.</p>
     </div>
     <div class="rev-grid">
       <div *ngFor="let r of reviews; let i = index" class="rev-card mehndi-card sr" [style.transition-delay]="(i * 0.09) + 's'">
-        <!-- Mehndi corner decoration -->
+        <!-- Mehndi corner decoration (madhubani style) -->
         <div class="mehndi-corner tl" aria-hidden="true">
-          <svg viewBox="0 0 40 40" fill="none"><path d="M2,38 Q2,2 38,2" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5"/><circle cx="8" cy="32" r="2" fill="currentColor" opacity="0.4"/><circle cx="32" cy="8" r="2" fill="currentColor" opacity="0.4"/><path d="M2,20 Q12,12 20,20 Q28,28 38,20" stroke="currentColor" stroke-width="1" fill="none" opacity="0.3"/></svg>
+          <svg viewBox="0 0 52 52" fill="none">
+            <path d="M2,50 Q2,2 50,2" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.45"/>
+            <path d="M8,50 Q8,8 50,8" stroke="currentColor" stroke-width="0.8" fill="none" opacity="0.2"/>
+            <ellipse cx="10" cy="28" rx="5" ry="12" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.3" transform="rotate(-45,10,28)"/>
+            <ellipse cx="28" cy="10" rx="12" ry="5" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.3" transform="rotate(-45,28,10)"/>
+            <circle cx="7" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+            <circle cx="7" cy="7" r="1.5" fill="currentColor" opacity="0.35"/>
+            <circle cx="18" cy="44" r="2.5" fill="currentColor" opacity="0.3"/>
+            <circle cx="44" cy="18" r="2.5" fill="currentColor" opacity="0.3"/>
+            <path d="M2,30 Q10,22 18,30" stroke="currentColor" stroke-width="0.9" fill="none" opacity="0.25"/>
+            <path d="M30,2 Q22,10 30,18" stroke="currentColor" stroke-width="0.9" fill="none" opacity="0.25"/>
+            <circle cx="12" cy="36" r="1.5" fill="currentColor" opacity="0.2"/>
+            <circle cx="36" cy="12" r="1.5" fill="currentColor" opacity="0.2"/>
+          </svg>
         </div>
         <div class="mehndi-corner br" aria-hidden="true">
-          <svg viewBox="0 0 40 40" fill="none"><path d="M38,2 Q38,38 2,38" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5"/><circle cx="32" cy="8" r="2" fill="currentColor" opacity="0.4"/><circle cx="8" cy="32" r="2" fill="currentColor" opacity="0.4"/></svg>
+          <svg viewBox="0 0 52 52" fill="none">
+            <path d="M50,2 Q50,50 2,50" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.45"/>
+            <path d="M44,2 Q44,44 2,44" stroke="currentColor" stroke-width="0.8" fill="none" opacity="0.2"/>
+            <ellipse cx="42" cy="24" rx="5" ry="12" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.3" transform="rotate(45,42,24)"/>
+            <ellipse cx="24" cy="42" rx="12" ry="5" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.3" transform="rotate(45,24,42)"/>
+            <circle cx="45" cy="45" r="4" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+            <circle cx="45" cy="45" r="1.5" fill="currentColor" opacity="0.35"/>
+            <circle cx="34" cy="8" r="2.5" fill="currentColor" opacity="0.3"/>
+            <circle cx="8" cy="34" r="2.5" fill="currentColor" opacity="0.3"/>
+            <path d="M50,22 Q42,30 34,22" stroke="currentColor" stroke-width="0.9" fill="none" opacity="0.25"/>
+            <path d="M22,50 Q30,42 22,34" stroke="currentColor" stroke-width="0.9" fill="none" opacity="0.25"/>
+          </svg>
         </div>
         <div class="rev-stars">★★★★★</div>
         <p class="rev-text">"{{r.text}}"</p>
