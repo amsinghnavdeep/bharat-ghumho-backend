@@ -25,5 +25,8 @@ RUN cd frontend && npm install && npm run build
 # Expose the port (Railway sets PORT env var)
 EXPOSE 8000
 
-# Run the application (use /bin/sh -c to properly expand $PORT)
-CMD ["/bin/sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Make start script executable
+RUN chmod +x start.sh
+
+# Run the application using start script
+CMD ["./start.sh"]
