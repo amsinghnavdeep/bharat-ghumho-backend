@@ -1,32 +1,34 @@
-# Cache buster - change this value to force a full rebuild
-ARG CACHE_DATE=2026-05-10-v2
+# Stage 1: Build Angular frontend
+FROM node:18-alpine AS frontend-builder
 
+WORKDIR /app/frontend
+
+# Copy frontend files
+COPY frontend/package.json frontend/package-lock.json ./
+
+# Install dependencies and build
+RUN npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+COPY frontend/ ./
+RUN npm run build
+
+# Stage 2: Python backend with built frontend
 FROM python:3.11-slim
-
-# Install Node.js for frontend build
-RUN apt-get update && apt-get install -y \
-    curl \
-    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy dependency files first for better caching
-COPY requirements.txt .
-
 # Install Python dependencies
-RUN pip install --upgrade pip && pip install -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire project
-COPY . .
+# Copy application code
+COPY app/ ./app/
+COPY main.py .
 
-# Build the Angular frontend
-RUN cd frontend && npm install && npm run build
+# Copy built frontend from stage 1
+COPY --from=frontend-builder /app/frontend/dist/ ./frontend/dist/
 
-# Expose the port
+# Expose port (Railway sets PORT env var, main.py reads it)
 EXPOSE 8000
 
-# Run the application (main.py reads PORT from environment)
+# Run the application
 CMD ["python", "main.py"]
