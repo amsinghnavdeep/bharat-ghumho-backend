@@ -60,16 +60,25 @@ def health():
 
 # --- Frontend (Angular SPA) -------------------------------------------------
 # When the Angular build output exists (produced by the `npm run build` step
-# in nixpacks.toml), FastAPI also serves the SPA. The API lives at /api/* and
+# in the Dockerfile), FastAPI also serves the SPA. The API lives at /api/* and
 # everything else is delegated to the SPA so Angular's client-side router can
 # handle the URL.
-FRONTEND_DIST = os.path.realpath(
-    os.path.join(
-        os.path.dirname(__file__),
-        "frontend", "dist", "bharat-gumho", "browser",
-    )
-)
-FRONTEND_INDEX = os.path.join(FRONTEND_DIST, "index.html")
+
+# Try multiple possible output locations for Angular builds
+_base_dir = os.path.join(os.path.dirname(__file__), "frontend", "dist", "bharat-gumho")
+_possible_paths = [
+    os.path.join(_base_dir, "browser"),  # Angular 17+ with SSR
+    _base_dir,                            # Angular 17+ browser-only
+]
+
+FRONTEND_DIST = None
+for path in _possible_paths:
+    real_path = os.path.realpath(path)
+    if os.path.isdir(real_path) and os.path.isfile(os.path.join(real_path, "index.html")):
+        FRONTEND_DIST = real_path
+        break
+
+FRONTEND_INDEX = os.path.join(FRONTEND_DIST, "index.html") if FRONTEND_DIST else None
 
 
 def _resolve_under_dist(requested: str) -> Optional[str]:
@@ -103,4 +112,5 @@ else:
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)

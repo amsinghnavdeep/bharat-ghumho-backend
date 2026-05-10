@@ -22,11 +22,8 @@ COPY . .
 # Build the Angular frontend
 RUN cd frontend && npm install && npm run build
 
-# Expose the port (Railway sets PORT env var)
+# Expose the port
 EXPOSE 8000
 
-# Make start script executable
-RUN chmod +x start.sh
-
-# Run the application using start script
-CMD ["./start.sh"]
+# Run the application (main.py reads PORT from environment)
+CMD ["python", "main.py"]
