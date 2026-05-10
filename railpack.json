@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.railpack.com",
+  "provider": "python",
+  "packages": {
+    "node": "18"
+  },
+  "steps": {
+    "build:frontend": {
+      "inputs": [
+        { "step": "build" }
+      ],
+      "commands": [
+        { "cmd": "cd frontend && npm ci", "customName": "Install Angular dependencies" },
+        { "cmd": "cd frontend && npm run build", "customName": "Build Angular SPA (ng build --configuration production)" }
+      ],
+      "deployOutputs": [
+        { "include": ["frontend/dist"] }
+      ]
+    }
+  },
+  "deploy": {
+    "startCommand": "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"
+  }
+}
