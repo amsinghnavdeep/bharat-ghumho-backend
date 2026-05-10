@@ -1,6 +1,11 @@
+import os
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from typing import Optional
+
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+
 from app import config, database
 from app.routers import (
     flights, auth, baggage, trips, hotels,
@@ -53,9 +58,47 @@ def health():
     return {"status": "ok", "service": "bharat-ghumho-api", "version": "3.0.0"}
 
 
-@app.get("/")
-def root():
-    return {"message": "Bharat Ghumho API - visit /docs for Swagger UI"}
+# --- Frontend (Angular SPA) -------------------------------------------------
+# When the Angular build output exists (produced by the `npm run build` step
+# in nixpacks.toml), FastAPI also serves the SPA. The API lives at /api/* and
+# everything else is delegated to the SPA so Angular's client-side router can
+# handle the URL.
+FRONTEND_DIST = os.path.realpath(
+    os.path.join(
+        os.path.dirname(__file__),
+        "frontend", "dist", "bharat-gumho", "browser",
+    )
+)
+FRONTEND_INDEX = os.path.join(FRONTEND_DIST, "index.html")
+
+
+def _resolve_under_dist(requested: str) -> Optional[str]:
+    """Resolve `requested` under FRONTEND_DIST, blocking path traversal."""
+    candidate = os.path.realpath(os.path.join(FRONTEND_DIST, requested))
+    if candidate == FRONTEND_DIST or candidate.startswith(FRONTEND_DIST + os.sep):
+        return candidate
+    return None
+
+
+if os.path.isdir(FRONTEND_DIST) and os.path.isfile(FRONTEND_INDEX):
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def spa(full_path: str):
+        # Let FastAPI 404 unknown API routes instead of returning index.html.
+        if full_path == "api" or full_path.startswith("api/"):
+            raise HTTPException(status_code=404)
+        if full_path:
+            candidate = _resolve_under_dist(full_path)
+            if candidate is not None and os.path.isfile(candidate):
+                return FileResponse(candidate)
+        return FileResponse(FRONTEND_INDEX)
+else:
+    @app.get("/")
+    def root():
+        return {
+            "message": "Bharat Ghumho API - visit /docs for Swagger UI. "
+                       "Frontend build not found at frontend/dist/bharat-gumho/browser; "
+                       "run `cd frontend && npm run build` to enable the SPA."
+        }
 
 
 if __name__ == "__main__":
