@@ -125,7 +125,7 @@ def _make_fare_trend(base: int, surge_pct: int, weeks: int = 16):
     return trend
 
 
-@router.get("/")
+@router.get("")
 def get_festivals():
     return [
         {

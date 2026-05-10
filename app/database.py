@@ -1,16 +1,37 @@
 """SQLite persistence for users, bookings, alerts, reviews and favorites."""
+import logging
 import os
 import sqlite3
 import json
 import threading
-from typing import Optional, Any, Iterable
+from typing import Optional, Any, Iterable, List
+
+logger = logging.getLogger(__name__)
 
 DB_PATH = os.getenv("BG_DB_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "bharat_ghumho.db"))
 
 _lock = threading.RLock()
 
 
-def _row_to_dict(row: sqlite3.Row | None) -> Optional[dict]:
+def _ensure_db_directory() -> None:
+    """Ensure the directory for DB_PATH exists and is writable."""
+    db_dir = os.path.dirname(os.path.abspath(DB_PATH))
+    if not db_dir:
+        return
+    try:
+        os.makedirs(db_dir, exist_ok=True)
+    except OSError as exc:
+        raise RuntimeError(
+            f"Could not create database directory '{db_dir}': {exc}"
+        ) from exc
+    if not os.access(db_dir, os.W_OK):
+        raise RuntimeError(
+            f"Database directory '{db_dir}' is not writable. "
+            "Set BG_DB_PATH to a writable location."
+        )
+
+
+def _row_to_dict(row: Optional[sqlite3.Row]) -> Optional[dict]:
     return dict(row) if row else None
 
 
@@ -98,11 +119,21 @@ CREATE TABLE IF NOT EXISTS saved_trips (
 
 
 def init_db() -> None:
+    _ensure_db_directory()
     with _lock:
-        conn = get_conn()
+        try:
+            conn = get_conn()
+        except sqlite3.Error as exc:
+            logger.exception("Failed to open database at %s", DB_PATH)
+            raise RuntimeError(f"Could not open database at '{DB_PATH}': {exc}") from exc
         try:
             conn.executescript(SCHEMA)
             conn.commit()
+        except sqlite3.Error as exc:
+            logger.exception("Failed to initialise database schema at %s", DB_PATH)
+            raise RuntimeError(
+                f"Could not initialise database schema at '{DB_PATH}': {exc}"
+            ) from exc
         finally:
             conn.close()
 
@@ -128,7 +159,7 @@ def fetchone(query: str, params: Iterable[Any] = ()) -> Optional[dict]:
             conn.close()
 
 
-def fetchall(query: str, params: Iterable[Any] = ()) -> list[dict]:
+def fetchall(query: str, params: Iterable[Any] = ()) -> List[dict]:
     with _lock:
         conn = get_conn()
         try:
@@ -148,7 +179,7 @@ def to_json(value: Any) -> str:
     return json.dumps(value, default=str)
 
 
-def from_json(text: str | None) -> Any:
+def from_json(text: Optional[str]) -> Any:
     if not text:
         return None
     try:

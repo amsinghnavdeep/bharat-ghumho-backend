@@ -49,11 +49,6 @@ def create_booking(req: BookingCreate, user=Depends(get_current_user)):
     return {"success": True, "booking": _row_to_booking(row)}
 
 
-@router.post("/")
-def create_booking_slash(req: BookingCreate, user=Depends(get_current_user)):
-    return create_booking(req, user)
-
-
 @router.get("")
 def list_bookings(user=Depends(get_current_user)):
     rows = database.fetchall(
@@ -61,11 +56,6 @@ def list_bookings(user=Depends(get_current_user)):
         (user["sub"],),
     )
     return {"success": True, "count": len(rows), "results": [_row_to_booking(r) for r in rows]}
-
-
-@router.get("/")
-def list_bookings_slash(user=Depends(get_current_user)):
-    return list_bookings(user)
 
 
 @router.get("/{booking_id}")

@@ -21,11 +21,6 @@ def visa_info(
     return {"success": True, "passport": pp, "destination": destination.upper(), **info}
 
 
-@router.get("/")
-def visa_root(passport: str = Query("IN"), destination: str = Query(...)):
-    return visa_info(passport=passport, destination=destination)
-
-
 @router.get("/countries")
 def countries():
     return {"success": True, "countries": all_countries(), "count": len(VISA_REQUIREMENTS)}
