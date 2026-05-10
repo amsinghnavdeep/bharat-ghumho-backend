@@ -1,3 +1,6 @@
+# Cache buster - change this value to force a full rebuild
+ARG CACHE_DATE=2026-05-10-v2
+
 FROM python:3.11-slim
 
 # Install Node.js for frontend build
