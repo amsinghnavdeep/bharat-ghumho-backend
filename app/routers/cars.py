@@ -13,7 +13,7 @@ def cars_search(
     sort: str = Query("price", enum=["price", "rating", "seats"]),
 ):
     results = search_cars(city, code, type, max_price, sort)
-    return {"success": True, "count": len(results), "cars": results}
+    return {"success": True, "count": len(results), "results": results}
 
 
 @router.get("/cities")
@@ -29,7 +29,7 @@ def cars_by_city(code: str):
         [c for c in CARS if c["code"] == code.upper()],
         key=lambda c: c["price_per_day"],
     )
-    return {"success": True, "city": code.upper(), "count": len(results), "cars": results}
+    return {"success": True, "city": code.upper(), "count": len(results), "results": results}
 
 
 @router.get("/{car_id}")

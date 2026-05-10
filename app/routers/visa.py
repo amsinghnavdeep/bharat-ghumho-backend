@@ -18,7 +18,7 @@ def visa_info(
     info = get_visa(destination)
     if not info:
         raise HTTPException(status_code=404, detail=f"No visa data for {destination.upper()}")
-    return {"success": True, "passport": pp, "destination": destination.upper(), **info}
+    return {"success": True, "passport": pp, "destination": destination.upper(), "visa": info}
 
 
 @router.get("/")

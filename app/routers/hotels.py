@@ -13,12 +13,12 @@ def search_hotels(city: str | None = None, code: str | None = None, min_stars: i
     if max_price: results = [h for h in results if h["price"] <= max_price]
     key = {"rating": "rating", "stars": "stars"}.get(sort, "price")
     results.sort(key=lambda x: x.get(key, 0), reverse=sort in ["rating","stars"])
-    return {"success": True, "hotels": results, "count": len(results)}
+    return {"success": True, "results": results, "count": len(results)}
 
 @router.get("/city/{code}")
 def hotels_by_city(code: str):
     hotels = sorted([h for h in HOTELS if h["code"] == code.upper()], key=lambda x: x["price"])
-    return {"success": True, "city": code.upper(), "hotels": hotels, "count": len(hotels)}
+    return {"success": True, "city": code.upper(), "results": hotels, "count": len(hotels)}
 
 @router.get("/{hotel_id}")
 def get_hotel(hotel_id: str):

@@ -11,7 +11,7 @@ def _row_to_alert(row: dict) -> dict:
     return {
         "id": row["id"],
         "user_id": row["user_id"],
-        "from": row["frm"],
+        "frm": row["frm"],
         "to": row["to_"],
         "target_price": row["target_price"],
         "currency": row["currency"],
