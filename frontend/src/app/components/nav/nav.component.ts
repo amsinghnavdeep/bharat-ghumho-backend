@@ -34,8 +34,7 @@ import { ThemeService } from '../../services/theme.service';
     <a routerLink="/flights" routerLinkActive="active" class="nav-link"><span class="nl-icon">✈</span><span>Flights</span></a>
     <a routerLink="/hotels" routerLinkActive="active" class="nav-link"><span class="nl-icon">🏨</span><span>Hotels</span></a>
     <a routerLink="/cars" routerLinkActive="active" class="nav-link"><span class="nl-icon">🚗</span><span>Cars</span></a>
-    <a routerLink="/holidays" routerLinkActive="active" class="nav-link"><span class="nl-icon">🏝</span><span>Holidays</span></a>
-    <a routerLink="/trip-planner" routerLinkActive="active" class="nav-link nav-link-special"><span class="nl-icon">🗺</span><span>Trip Planner</span></a>
+    <a routerLink="/holidays" routerLinkActive="active" class="nav-link"><span class="nl-icon">🏝</span><span>Holidays/Honeymoon</span></a>
     <a routerLink="/festival-calendar" routerLinkActive="active" class="nav-link nav-link-festival"><span class="nl-icon">🪔</span><span>Festivals</span></a>
   </div>
   <div class="nav-right">
@@ -84,8 +83,7 @@ import { ThemeService } from '../../services/theme.service';
   <a routerLink="/flights" routerLinkActive="active" (click)="closeMobile()"><span class="ic">✈</span> Flights</a>
   <a routerLink="/hotels" routerLinkActive="active" (click)="closeMobile()"><span class="ic">🏨</span> Hotels</a>
   <a routerLink="/cars" routerLinkActive="active" (click)="closeMobile()"><span class="ic">🚗</span> Cars</a>
-  <a routerLink="/holidays" routerLinkActive="active" (click)="closeMobile()"><span class="ic">🏝</span> Holidays</a>
-  <a routerLink="/trip-planner" routerLinkActive="active" (click)="closeMobile()"><span class="ic">🗺</span> Trip Planner</a>
+  <a routerLink="/holidays" routerLinkActive="active" (click)="closeMobile()"><span class="ic">🏝</span> Holidays/Honeymoon</a>
   <a routerLink="/festival-calendar" routerLinkActive="active" (click)="closeMobile()"><span class="ic">🪔</span> Festival Calendar</a>
   <ng-container *ngIf="auth.isAuthenticated()">
     <div class="drawer-divider"></div>

@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-hero', standalone: true, imports: [CommonModule],
+  selector: 'app-hero', standalone: true, imports: [CommonModule, RouterLink],
   template: `
 <section class="hero" id="hero">
   <!-- Deep layered Indian background -->
@@ -233,6 +234,15 @@ import { AuthService } from '../../services/auth.service';
         <button class="btn-p has-ripple" (click)="scrollToBooking()">
           <span class="btn-icon">✈</span> Search Flights
         </button>
+        <a class="btn-s" routerLink="/hotels">
+          <span class="btn-icon">🏨</span> Book Hotel
+        </a>
+        <a class="btn-s" routerLink="/cars">
+          <span class="btn-icon">🚗</span> Book Car
+        </a>
+        <a class="btn-s" routerLink="/holidays">
+          <span class="btn-icon">🏝</span> Book Holiday/Honeymoon
+        </a>
         <button class="btn-s" (click)="auth.openAppModal()">
           <span class="btn-icon">📱</span> Download App
         </button>
@@ -326,7 +336,7 @@ export class HeroComponent implements OnInit, OnDestroy {
     };
   });
 
-  constructor(public auth: AuthService) {
+  constructor(public auth: AuthService, private router: Router) {
     for (let i = 0; i < 32; i++) {
       this.diyas.push({
         left: Math.random() * 100 + '%',
@@ -342,7 +352,7 @@ export class HeroComponent implements OnInit, OnDestroy {
   ngOnInit() { this.animateCounters(); }
   ngOnDestroy() { this.timers.forEach(t => clearTimeout(t)); }
 
-  scrollToBooking() { document.getElementById('flights')?.scrollIntoView({ behavior: 'smooth' }); }
+  scrollToBooking() { this.router.navigate(['/flights']); }
 
   animateCounters() {
     const dur = 1800; const start = performance.now();
