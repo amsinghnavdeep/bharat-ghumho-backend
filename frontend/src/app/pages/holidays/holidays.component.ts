@@ -12,13 +12,48 @@ import { HolidayPackage } from '../../models';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-<section class="hol">
+<!-- Festival Journeys Hero -->
+<section class="page-hero hero-holidays">
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-pattern pat-rangoli"></div>
+  <!-- Floating lanterns -->
+  <div class="lantern-field" aria-hidden="true">
+    <svg class="lantern lan-1" viewBox="0 0 50 80"><defs><radialGradient id="lanG1" cx="50%" cy="40%" r="50%"><stop offset="0%" stop-color="#FFE49E"/><stop offset="60%" stop-color="#FF6B00"/><stop offset="100%" stop-color="#7A1F2B"/></radialGradient></defs><line x1="25" y1="0" x2="25" y2="14" stroke="#D4A843"/><ellipse cx="25" cy="38" rx="20" ry="26" fill="url(#lanG1)"/><rect x="22" y="62" width="6" height="6" fill="#7A1F2B"/><path d="M22 70 L25 78 L28 70" stroke="#D4A843" fill="none"/></svg>
+    <svg class="lantern lan-2" viewBox="0 0 50 80"><defs><radialGradient id="lanG2" cx="50%" cy="40%" r="50%"><stop offset="0%" stop-color="#FFE49E"/><stop offset="60%" stop-color="#FF8A3D"/><stop offset="100%" stop-color="#7A1F2B"/></radialGradient></defs><line x1="25" y1="0" x2="25" y2="14" stroke="#D4A843"/><ellipse cx="25" cy="38" rx="20" ry="26" fill="url(#lanG2)"/><rect x="22" y="62" width="6" height="6" fill="#7A1F2B"/></svg>
+    <svg class="lantern lan-3" viewBox="0 0 50 80"><defs><radialGradient id="lanG3" cx="50%" cy="40%" r="50%"><stop offset="0%" stop-color="#FFE49E"/><stop offset="60%" stop-color="#D4A843"/><stop offset="100%" stop-color="#7A1F2B"/></radialGradient></defs><line x1="25" y1="0" x2="25" y2="14" stroke="#D4A843"/><ellipse cx="25" cy="38" rx="20" ry="26" fill="url(#lanG3)"/><rect x="22" y="62" width="6" height="6" fill="#7A1F2B"/></svg>
+    <svg class="lantern lan-4" viewBox="0 0 50 80"><defs><radialGradient id="lanG4" cx="50%" cy="40%" r="50%"><stop offset="0%" stop-color="#FFE49E"/><stop offset="60%" stop-color="#FF6B00"/><stop offset="100%" stop-color="#7A1F2B"/></radialGradient></defs><line x1="25" y1="0" x2="25" y2="14" stroke="#D4A843"/><ellipse cx="25" cy="38" rx="20" ry="26" fill="url(#lanG4)"/><rect x="22" y="62" width="6" height="6" fill="#7A1F2B"/></svg>
+    <svg class="lantern lan-5" viewBox="0 0 50 80"><defs><radialGradient id="lanG5" cx="50%" cy="40%" r="50%"><stop offset="0%" stop-color="#FFE49E"/><stop offset="60%" stop-color="#FF8A3D"/><stop offset="100%" stop-color="#7A1F2B"/></radialGradient></defs><line x1="25" y1="0" x2="25" y2="14" stroke="#D4A843"/><ellipse cx="25" cy="38" rx="20" ry="26" fill="url(#lanG5)"/><rect x="22" y="62" width="6" height="6" fill="#7A1F2B"/></svg>
+  </div>
+  <!-- Skyline silhouette bottom -->
+  <svg class="hol-skyline" viewBox="0 0 1440 130" preserveAspectRatio="none" aria-hidden="true">
+    <g fill="rgba(122,31,43,.7)">
+      <path d="M0 130 L0 88 L60 88 L60 70 L90 70 L90 50 L100 40 L110 50 L110 70 L140 70 L140 88 L170 88 L170 130 Z"/>
+      <path d="M200 130 L200 76 L240 76 L240 60 L260 48 L270 38 L280 48 L300 60 L300 76 L340 76 L340 130 Z"/>
+      <path d="M380 130 L380 80 L420 80 L420 65 L450 50 L480 65 L480 80 L520 80 L520 130 Z"/>
+      <path d="M560 130 L560 90 L600 90 L600 70 L640 50 L680 70 L680 90 L720 90 L720 130 Z"/>
+      <path d="M760 130 L760 70 L800 70 L800 55 L830 40 L860 55 L860 70 L900 70 L900 130 Z"/>
+      <path d="M940 130 L940 85 L980 85 L980 65 L1020 50 L1060 65 L1060 85 L1100 85 L1100 130 Z"/>
+      <path d="M1140 130 L1140 75 L1180 75 L1180 55 L1210 40 L1240 55 L1240 75 L1280 75 L1280 130 Z"/>
+      <path d="M1320 130 L1320 88 L1360 88 L1360 70 L1390 55 L1420 70 L1420 88 L1440 88 L1440 130 Z"/>
+    </g>
+  </svg>
   <div class="w">
-    <header class="hol-head">
-      <small>Curated journeys</small>
-      <h1>Holiday <em>packages</em></h1>
-      <p>Hand-picked itineraries that show you the best of India and beyond.</p>
-    </header>
+    <span class="page-hero-tag">Festival Journeys</span>
+    <h1>Celebrate India —<br/><em>curated journeys</em></h1>
+    <p>Hand-picked itineraries that put you at the heart of Holi colors, Diwali lights, Onam feasts and India's most luminous festivals.</p>
+    <div class="category-strip dark">
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="8" r="3" fill="currentColor" fill-opacity=".4"/><circle cx="16" cy="6" r="2.5" fill="currentColor" fill-opacity=".3"/><circle cx="18" cy="14" r="3" fill="currentColor" fill-opacity=".4"/><circle cx="10" cy="16" r="2" fill="currentColor" fill-opacity=".5"/><circle cx="6" cy="18" r="2" fill="currentColor" fill-opacity=".3"/></svg></span><span class="cat-label">Holi</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 C13 5 14 7 14 9 C14 11 13 12 12 12 C11 12 10 11 10 9 C10 7 11 5 12 3 Z" fill="currentColor" fill-opacity=".3"/><path d="M9 13 L15 13 L14 17 L10 17 Z"/><path d="M8 18 L16 18 L15 22 L9 22 Z"/></svg></span><span class="cat-label">Diwali</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 22 L7 6 L11 4 L11 22 M13 22 L13 4 L17 6 L17 22"/><path d="M5 22 L19 22"/></svg></span><span class="cat-label">Dussehra</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 4 C9 4 7 6 7 9 C7 11 9 12 9 14 L9 16 L15 16 L15 14 C15 12 17 11 17 9 C17 6 15 4 12 4 Z"/><path d="M9 18 L15 18 M9 20 L15 20"/></svg></span><span class="cat-label">Pushkar Fair</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="5" r="2"/><path d="M12 7 L12 12 L8 16 L8 21 M12 12 L16 16 L16 21"/></svg></span><span class="cat-label">Navratri</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 6 C10 6 8 8 8 10 C8 12 10 13 12 14 C14 13 16 12 16 10 C16 8 14 6 12 6 Z"/><circle cx="12" cy="10" r="1.5" fill="currentColor"/><path d="M6 18 C6 16 8 14 12 14 C16 14 18 16 18 18"/></svg></span><span class="cat-label">Onam</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="hol pat-rangoli">
+  <div class="w">
 
     <div class="filter-bar">
       <div class="form-group">
@@ -52,7 +87,7 @@ import { HolidayPackage } from '../../models';
       <article class="pkg-card" *ngFor="let p of filtered()">
         <div class="pkg-cover" [style.background]="getBg(p)">
           <span class="pkg-theme">{{p.theme}}</span>
-          <button class="heart" [class.on]="isFav(p.id)" (click)="toggleFav(p)">♥</button>
+          <button class="heart" [class.on]="isFav(p.id)" (click)="toggleFav(p)" aria-label="Save"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
         </div>
         <div class="pkg-body">
           <strong class="pkg-name">{{p.name}}</strong>
@@ -78,7 +113,24 @@ import { HolidayPackage } from '../../models';
   </div>
 </section>`,
   styles: [`
-    .hol{padding:120px 0 80px;background:#F7F8FA;min-height:100vh}
+    /* Festival Journeys hero */
+    .hero-holidays{background:linear-gradient(135deg,#7A1F2B 0%,#A02638 25%,#FF6B00 55%,#FF8A3D 80%,#D4A843 100%);min-height:540px;padding-bottom:80px}
+    .hero-holidays .page-hero-overlay{background:radial-gradient(circle at 70% 20%,rgba(255,228,158,.35) 0%,transparent 55%),radial-gradient(circle at 20% 80%,rgba(122,31,43,.35) 0%,transparent 60%)}
+    .hero-holidays .page-hero-pattern{opacity:.22;filter:invert(1) brightness(1.4)}
+    .lantern-field{position:absolute;top:20px;left:0;right:0;height:100%;pointer-events:none;z-index:2}
+    .lantern{position:absolute;width:42px;height:68px;filter:drop-shadow(0 0 18px rgba(255,228,158,.6))}
+    .lan-1{left:8%;top:30px;animation:lanFloat 6s ease-in-out infinite}
+    .lan-2{left:24%;top:60px;animation:lanFloat 7s ease-in-out infinite .8s}
+    .lan-3{right:30%;top:40px;animation:lanFloat 5.5s ease-in-out infinite 1.4s;width:50px;height:80px}
+    .lan-4{right:14%;top:80px;animation:lanFloat 6.5s ease-in-out infinite 2s}
+    .lan-5{right:6%;top:30px;animation:lanFloat 5s ease-in-out infinite 1s}
+    @keyframes lanFloat{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-18px) rotate(3deg)}}
+    .hol-skyline{position:absolute;left:0;right:0;bottom:0;width:100%;height:130px;z-index:2;pointer-events:none}
+    /* Body */
+    .hol{padding:60px 0 80px;background:linear-gradient(180deg,#FCEBD5 0%,#FFF7E8 100%);min-height:100vh;position:relative}
+    .hol.pat-rangoli::before{content:'';position:absolute;inset:0;opacity:.1;pointer-events:none}
+    .pkg-card{position:relative;overflow:hidden}
+    .pkg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#FF6B00,#fff,#138808);z-index:3}
     .hol-head{margin-bottom:28px;text-align:center}
     .hol-head small{font-size:12px;color:#138808;text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
     .hol-head h1{font-size:42px;font-weight:900;letter-spacing:-2px;margin:6px 0 8px}

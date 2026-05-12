@@ -16,14 +16,69 @@ interface FareDay { label: string; value: number; date: string; }
   standalone: true,
   imports: [CommonModule, FormsModule, FareAlertModalComponent, PriceChartComponent],
   template: `
-<section class="flights">
+<!-- Bollywood Dream Hero -->
+<section class="page-hero hero-flights">
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-pattern pat-rangoli"></div>
+  <!-- Spotlight rays -->
+  <div class="ray-burst" aria-hidden="true">
+    <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <radialGradient id="rayLight" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#FFD78A" stop-opacity=".55"/>
+          <stop offset="100%" stop-color="#FFD78A" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <g transform="translate(400 200)" fill="url(#rayLight)" opacity=".4">
+        <polygon points="0,0 -380,-200 -360,-220"/>
+        <polygon points="0,0 -380,-100 -370,-130"/>
+        <polygon points="0,0 -380,0 -380,-30"/>
+        <polygon points="0,0 -380,100 -370,130"/>
+        <polygon points="0,0 -380,200 -360,220"/>
+        <polygon points="0,0 380,-200 360,-220"/>
+        <polygon points="0,0 380,-100 370,-130"/>
+        <polygon points="0,0 380,0 380,-30"/>
+        <polygon points="0,0 380,100 370,130"/>
+        <polygon points="0,0 380,200 360,220"/>
+      </g>
+    </svg>
+  </div>
+  <!-- Film-reel watermark -->
+  <svg class="page-hero-watermark film-reel" viewBox="0 0 400 400" aria-hidden="true">
+    <g fill="none" stroke="#FFD78A" stroke-width="1.5" stroke-opacity=".4">
+      <circle cx="200" cy="200" r="170"/>
+      <circle cx="200" cy="200" r="100"/>
+      <circle cx="200" cy="200" r="20" fill="#FFD78A" fill-opacity=".15"/>
+    </g>
+    <g fill="#FFD78A" fill-opacity=".18">
+      <circle cx="200" cy="50" r="20"/>
+      <circle cx="335" cy="135" r="20"/>
+      <circle cx="335" cy="265" r="20"/>
+      <circle cx="200" cy="350" r="20"/>
+      <circle cx="65" cy="265" r="20"/>
+      <circle cx="65" cy="135" r="20"/>
+    </g>
+  </svg>
   <div class="w">
-    <header class="fl-head">
-      <small>Find the best fare</small>
-      <h1>Search <em>flights</em></h1>
-      <p>One-way, round-trip and multi-city searches across India and the diaspora corridors.</p>
-    </header>
+    <span class="page-hero-tag">Bollywood Dream</span>
+    <h1>Find your best <em>fare</em><br/>like a blockbuster opening</h1>
+    <p>One-way, round-trip and multi-city searches across India and the diaspora corridors — compare every airline, every cabin, zero fees.</p>
+    <!-- Film strip border bottom -->
+    <div class="film-strip" aria-hidden="true">
+      <span *ngFor="let i of [0,1,2,3,4,5,6,7,8,9,10,11]"></span>
+    </div>
+    <div class="category-strip dark">
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></span><span class="cat-label">Film Locations</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 L14.6 8.6 L22 9.3 L16.5 14 L18.2 21 L12 17.3 L5.8 21 L7.5 14 L2 9.3 L9.4 8.6 Z"/></svg></span><span class="cat-label">Star Experiences</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M6 3 L8 7 M10 3 L12 7 M14 3 L16 7 M18 3 L20 7"/></svg></span><span class="cat-label">Behind the Scenes</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="14" height="14" rx="2"/><path d="M17 9 L22 6 L22 18 L17 15"/></svg></span><span class="cat-label">Film History</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6 L10 4 L14 4 L16 6"/></svg></span><span class="cat-label">Fan Moments</span></a>
+    </div>
+  </div>
+</section>
 
+<section class="flights pat-rangoli">
+  <div class="w">
     <div class="search-bar">
       <div class="form-group">
         <label>From</label>
@@ -51,7 +106,7 @@ interface FareDay { label: string; value: number; date: string; }
         </select>
       </div>
       <button class="s-btn" (click)="search()">Search</button>
-      <button class="ghost" (click)="alertOpen.set(true)">🔔 Alert me</button>
+      <button class="ghost" (click)="alertOpen.set(true)"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg> Alert me</button>
     </div>
 
     <div class="fl-side" *ngIf="filtered().length">
@@ -93,8 +148,8 @@ interface FareDay { label: string; value: number; date: string; }
           </div>
         </div>
         <div class="fc-bot">
-          <button class="ghost-sm" (click)="toggleFav(f)">{{isFav(f.id) ? '♥ Saved' : '♡ Save'}}</button>
-          <button class="ghost-sm" (click)="openAlert(f)">🔔 Alert</button>
+          <button class="ghost-sm" (click)="toggleFav(f)"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path [attr.fill]="isFav(f.id) ? '#FF6B00' : 'none'" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> {{isFav(f.id) ? 'Saved' : 'Save'}}</button>
+          <button class="ghost-sm" (click)="openAlert(f)"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg> Alert</button>
           <button (click)="book(f)">Book {{f.cabin}}</button>
         </div>
       </article>
@@ -103,7 +158,25 @@ interface FareDay { label: string; value: number; date: string; }
   <app-fare-alert-modal [open]="alertOpen()" [defaults]="alertDefaults()" (close)="alertOpen.set(false)"></app-fare-alert-modal>
 </section>`,
   styles: [`
-    .flights{padding:120px 0 80px;background:#F7F8FA;min-height:100vh}
+    /* Bollywood Dream hero */
+    .hero-flights{background:linear-gradient(135deg,#0A0E27 0%,#1A0F3D 35%,#3B0A2E 70%,#7A1F2B 100%);min-height:480px}
+    .hero-flights .page-hero-overlay{background:radial-gradient(circle at 30% 40%,rgba(255,107,0,.22) 0%,transparent 55%),radial-gradient(circle at 70% 60%,rgba(212,168,67,.18) 0%,transparent 50%)}
+    .hero-flights .page-hero-pattern.pat-rangoli{opacity:.08;filter:invert(1) brightness(2)}
+    .ray-burst{position:absolute;inset:0;z-index:1;pointer-events:none;display:flex;align-items:center;justify-content:center;animation:rayPulse 8s ease-in-out infinite}
+    .ray-burst svg{width:110%;height:110%}
+    @keyframes rayPulse{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:.85;transform:scale(1.05)}}
+    .hero-flights .film-reel{animation:reelSpin 28s linear infinite;right:-4%}
+    @keyframes reelSpin{from{transform:translateY(-50%) rotate(0deg)}to{transform:translateY(-50%) rotate(360deg)}}
+    .film-strip{display:flex;gap:6px;margin-top:18px;background:#0A0E27;border:2px solid rgba(212,168,67,.55);border-radius:6px;padding:6px 8px;width:fit-content;box-shadow:0 6px 20px rgba(212,168,67,.18)}
+    .film-strip span{width:14px;height:18px;background:rgba(212,168,67,.18);border-radius:2px;display:block}
+    .film-strip span:nth-child(odd){background:rgba(255,107,0,.35)}
+    .bi{width:13px;height:13px;display:inline-block;vertical-align:-2px;margin-right:4px}
+    /* Body */
+    .flights{padding:60px 0 80px;background:linear-gradient(180deg,var(--cream) 0%,#F7F8FA 100%);min-height:100vh;position:relative}
+    .flights.pat-rangoli::before{content:'';position:absolute;inset:0;opacity:.06;pointer-events:none}
+    .fc{position:relative;overflow:hidden}
+    .fc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FF6B00,#D4A843,#138808);transform:scaleX(0);transform-origin:left;transition:transform .45s}
+    .fc:hover::before{transform:scaleX(1)}
     .fl-head{margin-bottom:28px;text-align:center}
     .fl-head small{font-size:12px;color:#FF6B00;text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
     .fl-head h1{font-size:42px;font-weight:900;letter-spacing:-2px;margin:6px 0 8px}

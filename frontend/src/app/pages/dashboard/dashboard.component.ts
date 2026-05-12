@@ -16,6 +16,10 @@ import { Booking, FareAlert, Favorite } from '../../models';
   imports: [CommonModule, FormsModule, RouterLink, BookingCardComponent],
   template: `
 <section class="dash">
+  <!-- Tri-color animated stripe at top -->
+  <div class="dash-tricolor" aria-hidden="true">
+    <span></span><span></span><span></span>
+  </div>
   <div class="dash-watermarks" aria-hidden="true">
     <svg class="dash-wm dash-wm-taj" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
       <path d="M30 110 L30 80 L40 80 L40 65 L50 65 L50 50 C50 40 60 30 70 30 C75 25 80 20 85 20 L85 5 L95 5 L100 0 L105 5 L115 5 L115 20 C120 20 125 25 130 30 C140 30 150 40 150 50 L150 65 L160 65 L160 80 L170 80 L170 110 Z" fill="currentColor" opacity="0.7"/>
@@ -132,7 +136,13 @@ import { Booking, FareAlert, Favorite } from '../../models';
   </div>
 </section>`,
   styles: [`
-    .dash{padding:120px 0 80px;background:var(--page,#F7F8FA);min-height:100vh;position:relative;overflow:hidden}
+    .dash{padding:140px 0 80px;background:linear-gradient(180deg,var(--cream,#FFF7E8) 0%,#F7F8FA 80%);min-height:100vh;position:relative;overflow:hidden}
+    .dash-tricolor{position:absolute;top:0;left:0;right:0;height:4px;display:flex;z-index:5;background:#fff}
+    .dash-tricolor span{flex:1;background-size:200% 100%;animation:tricolorWave 4s ease-in-out infinite}
+    .dash-tricolor span:nth-child(1){background:linear-gradient(90deg,#FF6B00,#FF8A3D,#D4A843,#FF6B00)}
+    .dash-tricolor span:nth-child(2){background:linear-gradient(90deg,#fff,#FFF7E8,#fff)}
+    .dash-tricolor span:nth-child(3){background:linear-gradient(90deg,#138808,#34D399,#0D7377,#138808)}
+    @keyframes tricolorWave{0%,100%{background-position:0% 50%}50%{background-position:200% 50%}}
     .dash-watermarks{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.06;color:var(--gold,#D4A843)}
     .dash-wm{position:absolute;color:currentColor}
     .dash-wm-taj{top:80px;right:5%;width:280px;height:auto}
