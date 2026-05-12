@@ -10,6 +10,11 @@ import { SearchTabsComponent } from '../../components/search-tabs/search-tabs.co
 import { WeatherWidgetComponent } from '../../components/weather-widget/weather-widget.component';
 import { CurrencyConverterComponent } from '../../components/currency-converter/currency-converter.component';
 import { DestinationCardComponent, DestinationCardData } from '../../components/destination-card/destination-card.component';
+import { HeritageShowcaseComponent } from '../../components/heritage-showcase/heritage-showcase.component';
+import { ArtsCraftsComponent } from '../../components/arts-crafts/arts-crafts.component';
+import { HandloomTextilesComponent } from '../../components/handloom-textiles/handloom-textiles.component';
+import { CulturalExperiencesComponent } from '../../components/cultural-experiences/cultural-experiences.component';
+import { HeritageTrailsComponent } from '../../components/heritage-trails/heritage-trails.component';
 import { PopularRoute } from '../../models';
 
 @Component({
@@ -17,7 +22,9 @@ import { PopularRoute } from '../../models';
   imports: [
     CommonModule, HeroComponent, BookingComponent, FeaturesComponent, RoutesSectionComponent,
     ReviewsComponent, CtaComponent, SearchTabsComponent, WeatherWidgetComponent,
-    CurrencyConverterComponent, DestinationCardComponent
+    CurrencyConverterComponent, DestinationCardComponent, HeritageShowcaseComponent,
+    ArtsCraftsComponent, HandloomTextilesComponent, CulturalExperiencesComponent,
+    HeritageTrailsComponent
   ],
   template: `
     <app-hero/>
@@ -39,6 +46,7 @@ import { PopularRoute } from '../../models';
         </div>
       </div>
     </section>
+    <app-heritage-showcase/>
     <section class="widgets">
       <div class="w widgets-grid">
         <app-currency-converter />
@@ -46,15 +54,19 @@ import { PopularRoute } from '../../models';
         <app-weather-widget [city]="'Goa'" [showForecast]="true" />
       </div>
     </section>
+    <app-arts-crafts/>
+    <app-handloom-textiles/>
     <app-features/>
+    <app-cultural-experiences/>
     <app-routes-section (routeClick)="onRouteClick($event)"/>
+    <app-heritage-trails/>
     <app-reviews/>
     <app-cta/>
   `,
   styles: [`
-    .search-tabs-wrap{padding:0 0 24px;background:#F7F8FA}
-    .trending{padding:80px 0 60px;background:#F7F8FA}
-    .widgets{padding:30px 0 60px;background:#F7F8FA}
+    .search-tabs-wrap{padding:0 0 24px;background:var(--page)}
+    .trending{padding:80px 0 60px;background:var(--page)}
+    .widgets{padding:30px 0 60px;background:var(--page)}
     .widgets-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
     @media(max-width:900px){.widgets-grid{grid-template-columns:1fr}}
     .dest-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:40px}
