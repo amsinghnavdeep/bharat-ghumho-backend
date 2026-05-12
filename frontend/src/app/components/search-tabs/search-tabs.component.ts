@@ -11,8 +11,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
   <a routerLink="/flights" routerLinkActive="active" class="st-tab"><span>✈</span>Flights</a>
   <a routerLink="/hotels" routerLinkActive="active" class="st-tab"><span>🏨</span>Hotels</a>
   <a routerLink="/cars" routerLinkActive="active" class="st-tab"><span>🚗</span>Cars</a>
-  <a routerLink="/holidays" routerLinkActive="active" class="st-tab"><span>🏖</span>Holidays</a>
-  <a routerLink="/trip-planner" routerLinkActive="active" class="st-tab"><span>🗺</span>Trip Planner</a>
+  <a routerLink="/holidays" routerLinkActive="active" class="st-tab"><span>🏖</span>Holidays/Honeymoon</a>
 </div>`,
   styles: [`
     .st{display:flex;gap:6px;background:#fff;border:1px solid #E5E9F0;border-radius:16px;padding:6px;box-shadow:0 2px 8px rgba(0,0,0,.04);overflow-x:auto;scrollbar-width:none}

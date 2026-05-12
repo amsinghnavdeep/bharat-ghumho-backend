@@ -51,8 +51,7 @@ import { RouterLink } from '@angular/router';
             <a routerLink="/flights">Flight Search</a>
             <a routerLink="/hotels">Hotels</a>
             <a routerLink="/cars">Cars</a>
-            <a routerLink="/holidays">Holidays</a>
-            <a routerLink="/trip-planner">AI Trip Planner</a>
+            <a routerLink="/holidays">Holidays/Honeymoon</a>
           </div>
           <div class="footer-col">
             <h4>🛠 Travel Tools</h4>

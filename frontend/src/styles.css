@@ -986,3 +986,31 @@ html[data-theme="dark"] .sec-tag.mn{background:rgba(122,31,43,.15);color:#E08FA0
 /* Swiper slide layout fix */
 swiper-slide{height:auto !important;display:flex !important;align-items:stretch !important}
 swiper-slide > *{width:100% !important;display:flex !important;flex-direction:column}
+
+/* ===== Floating WhatsApp chat button ===== */
+.whatsapp-float {
+  position: fixed;
+  bottom: 32px;
+  left: 32px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25D366;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 900;
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+  transition: all 0.3s;
+  text-decoration: none;
+}
+.whatsapp-float:hover {
+  transform: translateY(-4px) scale(1.1);
+  box-shadow: 0 12px 32px rgba(37, 211, 102, 0.5);
+}
+.whatsapp-float svg {
+  width: 28px;
+  height: 28px;
+  fill: #fff;
+}
