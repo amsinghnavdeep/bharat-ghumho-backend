@@ -56,7 +56,7 @@ interface HeritageSite {
         </div>
         <div class="hb-divider"></div>
         <div class="hb-stat">
-          <strong>29</strong>
+          <strong>28</strong>
           <span>States to Explore</span>
         </div>
         <div class="hb-divider"></div>
