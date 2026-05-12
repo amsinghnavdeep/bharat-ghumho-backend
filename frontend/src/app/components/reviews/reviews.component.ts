@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-reviews',
   standalone: true,
   imports: [CommonModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `
 <section class="reviews" id="reviews">
   <div class="reviews-pattern" aria-hidden="true"></div>
@@ -26,8 +27,19 @@ import { CommonModule } from '@angular/common';
       </div>
       <p class="sec-sub">Real stories from the Indian diaspora who found a better way to book their journey back home.</p>
     </div>
-    <div class="rev-grid">
-      <div *ngFor="let r of reviews; let i = index" class="rev-card mehndi-card sr" [style.transition-delay]="(i * 0.09) + 's'">
+    <swiper-container class="rev-swiper sr"
+      slides-per-view="1.05"
+      space-between="20"
+      breakpoints='{"640":{"slidesPerView":2,"spaceBetween":22},"1024":{"slidesPerView":3,"spaceBetween":24}}'
+      pagination="true"
+      pagination-clickable="true"
+      navigation="true"
+      autoplay-delay="6500"
+      autoplay-disable-on-interaction="false"
+      loop="true"
+      grab-cursor="true">
+      <swiper-slide *ngFor="let r of reviews; let i = index">
+      <div class="rev-card mehndi-card" [style.transition-delay]="(i * 0.09) + 's'">
         <!-- Mehndi corner decoration (madhubani style) -->
         <div class="mehndi-corner tl" aria-hidden="true">
           <svg viewBox="0 0 52 52" fill="none">
@@ -73,7 +85,8 @@ import { CommonModule } from '@angular/common';
           </div>
         </div>
       </div>
-    </div>
+      </swiper-slide>
+    </swiper-container>
     <!-- Trust row -->
     <div class="trust-row sr">
       <div class="trust-stat" *ngFor="let t of trustStats">
