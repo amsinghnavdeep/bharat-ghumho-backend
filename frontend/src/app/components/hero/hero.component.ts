@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -228,24 +229,33 @@ import { AuthService } from '../../services/auth.service';
         <div class="hero-namaste"><span class="ns-emoji">🙏</span><span>Namaste, traveller</span></div>
         <div class="hero-badge"><div class="hero-badge-dot"></div><span>18.5M Indians abroad</span></div>
       </div>
-      <h1>Find your best<br>fare <span class="grad-s">home</span>.<br><span class="grad-g">Every time.</span></h1>
+      <div class="mughal-arch-frame lg hero-heading-frame">
+        <h1>Find your best<br>fare <span class="grad-s">home</span>.<br><span class="grad-g">Every time.</span></h1>
+      </div>
       <p class="hero-sub">Multi-city flight search built for the Indian diaspora. Compare every airline across 6 corridors — one search, best prices, zero fees.</p>
       <div class="hero-btns">
-        <button class="btn-p has-ripple" (click)="scrollToBooking()">
-          <span class="btn-icon">✈</span> Search Flights
+        <button class="btn-hero btn-hero-flights has-ripple" (click)="scrollToBooking()">
+          <span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></span> Search Flights
         </button>
-        <a class="btn-s" routerLink="/hotels">
-          <span class="btn-icon">🏨</span> Book Hotel
+        <a class="btn-hero btn-hero-hotel" routerLink="/hotels">
+          <span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v13"/><path d="M3 13h18"/><path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span> Book Hotel
         </a>
-        <a class="btn-s" routerLink="/cars">
-          <span class="btn-icon">🚗</span> Book Car
+        <a class="btn-hero btn-hero-car" routerLink="/cars">
+          <span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h1.5a1 1 0 0 0 1-1v-3.6a1 1 0 0 0-.4-.8L19 9.2 17.2 5.4A2 2 0 0 0 15.4 4H8.6a2 2 0 0 0-1.8 1.4L5 9.2 2.9 10.6a1 1 0 0 0-.4.8V15a1 1 0 0 0 1 1H5"/><circle cx="7" cy="16" r="2"/><circle cx="17" cy="16" r="2"/></svg></span> Book Car
         </a>
-        <a class="btn-s" routerLink="/holidays">
-          <span class="btn-icon">🏝</span> Book Holiday/Honeymoon
+        <a class="btn-hero btn-hero-holiday" routerLink="/holidays">
+          <span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 0 1-6.71-9"/><path d="M8.5 8a4 4 0 0 1 7 0"/><path d="M12 8a8 8 0 0 1 7.7 6"/><path d="M12 8v13"/><path d="M3 21h18"/></svg></span> Book Holiday
         </a>
-        <button class="btn-s" (click)="auth.openAppModal()">
-          <span class="btn-icon">📱</span> Download App
+        <button class="btn-hero btn-hero-app" (click)="auth.openAppModal()">
+          <span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></svg></span> Download App
         </button>
+      </div>
+      <!-- Category strip: Heritage / Adventure / Spiritual / Nature / Culture / Festivals -->
+      <div class="category-strip dark" aria-label="Explore by theme">
+        <a class="cat-pill" *ngFor="let c of categories" [routerLink]="c.link">
+          <span class="cat-icon" [innerHTML]="c.svg"></span>
+          <span class="cat-label">{{c.label}}</span>
+        </a>
       </div>
       <div class="hero-stats">
         <div class="hero-stat" *ngFor="let s of stats; let i = index" [attr.data-idx]="i">
@@ -279,7 +289,10 @@ import { AuthService } from '../../services/auth.service';
     .hero-kalam-left{position:absolute;left:0;top:0;bottom:0;width:60px;z-index:2;pointer-events:none;opacity:.6}
     .hero-kalam-left svg{width:100%;height:100%}
     .hero-bg-warm{position:absolute;inset:0;background:radial-gradient(ellipse at 25% 50%, rgba(122,31,43,0.4) 0%, transparent 55%), radial-gradient(ellipse at 75% 20%, rgba(212,168,67,0.12) 0%, transparent 45%);z-index:0}
-    .hero-peacock-art{position:absolute;top:50%;right:-5%;transform:translateY(-50%);width:54%;max-width:600px;z-index:1;pointer-events:none}
+    .hero-peacock-art{position:absolute;top:50%;right:2%;transform:translateY(-50%);width:48%;max-width:540px;z-index:1;pointer-events:none}
+    .hero-heading-frame{margin-bottom:8px}
+    .hero-heading-frame h1{margin:0}
+    @media(max-width:760px){.hero-heading-frame{padding:8px 36px}}
     .peacock-svg{width:100%;height:100%;filter:drop-shadow(0 0 40px rgba(13,115,119,0.2)) drop-shadow(0 0 80px rgba(212,168,67,0.08));animation:peacockBreathe 8s ease-in-out infinite}
     @keyframes peacockBreathe{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.015) translateY(-6px)}}
     .hero-devanagari-wrap{display:flex;align-items:center;gap:10px;margin-bottom:14px;animation:fadeInUp .6s ease-out both}
@@ -312,6 +325,19 @@ export class HeroComponent implements OnInit, OnDestroy {
     { icon: '💒', name: 'Wedding Season' },
     { icon: '🥭', name: 'Summer Breaks' }
   ];
+  categories: { svg: SafeHtml; label: string; link: string }[] = [];
+
+  buildCategories(s: DomSanitizer) {
+    const sg = (path: string) => s.bypassSecurityTrustHtml(`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`);
+    this.categories = [
+      { svg: sg('<path d="M3 21 L21 21 M5 21 L5 11 L12 6 L19 11 L19 21 M9 21 L9 14 L15 14 L15 21 M12 6 L12 3 L13 3 L13 6"/>'), label: 'Heritage', link: '/holidays' },
+      { svg: sg('<path d="M3 21 L8 11 L11 16 L14 9 L17 14 L21 21 Z M8 11 L8 6 L11 6"/>'), label: 'Adventure', link: '/cars' },
+      { svg: sg('<path d="M12 3 C9 6 7 9 7 12 C7 16 9.5 19 12 21 C14.5 19 17 16 17 12 C17 9 15 6 12 3 Z M12 8 C11 10 10 11 10 12 C10 14 11 15 12 16 C13 15 14 14 14 12 C14 11 13 10 12 8 Z"/>'), label: 'Spiritual', link: '/trip-planner' },
+      { svg: sg('<path d="M5 21 C5 21 5 13 8 11 C5 11 4 7 6 5 C9 8 11 11 12 14 C13 11 15 8 18 5 C20 7 19 11 16 11 C19 13 19 21 19 21 Z"/>'), label: 'Nature', link: '/destination/GOI' },
+      { svg: sg('<circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/><path d="M9 7 L9 4 M15 7 L15 4 M5 16 L5 19 M19 16 L19 19"/>'), label: 'Culture', link: '/festival-calendar' },
+      { svg: sg('<path d="M12 3 C13 5 14 7 14 9 C14 11 13 12 12 12 C11 12 10 11 10 9 C10 7 11 5 12 3 Z M9 13 L15 13 L14 17 L10 17 Z M8 18 L16 18 L15 22 L9 22 Z"/>'), label: 'Festivals', link: '/festival-calendar' }
+    ];
+  }
 
   peacockFeathers = Array.from({ length: 13 }, (_, i) => {
     const rot = -78 + i * 13;
@@ -336,7 +362,8 @@ export class HeroComponent implements OnInit, OnDestroy {
     };
   });
 
-  constructor(public auth: AuthService, private router: Router) {
+  constructor(public auth: AuthService, private router: Router, private sanitizer: DomSanitizer) {
+    this.buildCategories(sanitizer);
     for (let i = 0; i < 32; i++) {
       this.diyas.push({
         left: Math.random() * 100 + '%',

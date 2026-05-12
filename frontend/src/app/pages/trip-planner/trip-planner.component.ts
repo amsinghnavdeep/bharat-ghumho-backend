@@ -25,13 +25,59 @@ interface TripTemplate {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   template: `
-<section class="tp">
+<!-- Spiritual India Hero -->
+<section class="page-hero hero-trip">
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-pattern pat-lotus"></div>
+  <!-- Floating diyas -->
+  <div class="diya-row" aria-hidden="true">
+    <span *ngFor="let d of diyaArr; let i=index" class="diya-flame" [style.animationDelay]="(i*0.4)+'s'" [style.left]="(8 + i*11)+'%'"></span>
+  </div>
+  <!-- Varanasi ghat silhouette -->
+  <svg class="ghat-skyline" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
+    <g fill="rgba(255,215,138,.18)">
+      <path d="M0 160 L0 90 L80 90 L80 70 L120 70 L120 50 L130 40 L140 50 L140 70 L180 70 L180 90 L240 90 L240 160 Z"/>
+      <path d="M280 160 L280 80 L340 80 L340 60 L360 50 L380 40 L400 50 L420 60 L420 80 L480 80 L480 160 Z"/>
+      <path d="M520 160 L520 100 L580 100 L580 70 L620 50 L660 70 L660 100 L720 100 L720 160 Z"/>
+      <path d="M760 160 L760 70 L820 70 L820 50 L850 35 L880 50 L880 70 L940 70 L940 160 Z"/>
+      <path d="M980 160 L980 90 L1040 90 L1040 65 L1080 45 L1120 65 L1120 90 L1180 90 L1180 160 Z"/>
+      <path d="M1220 160 L1220 80 L1280 80 L1280 60 L1310 45 L1340 60 L1340 80 L1400 80 L1400 160 Z"/>
+    </g>
+    <g stroke="rgba(255,215,138,.35)" fill="none">
+      <path d="M0 150 C100 142 200 152 300 146 C400 140 500 152 600 144 C700 136 800 152 900 146 C1000 140 1100 152 1200 146 C1300 140 1400 152 1440 144" stroke-width="1"/>
+    </g>
+    <!-- floating diya boats -->
+    <g fill="#FF6B00" fill-opacity=".7">
+      <ellipse cx="180" cy="144" rx="5" ry="2"/><circle cx="180" cy="140" r="2"/>
+      <ellipse cx="420" cy="148" rx="5" ry="2"/><circle cx="420" cy="144" r="2"/>
+      <ellipse cx="720" cy="146" rx="5" ry="2"/><circle cx="720" cy="142" r="2"/>
+      <ellipse cx="1020" cy="148" rx="5" ry="2"/><circle cx="1020" cy="144" r="2"/>
+      <ellipse cx="1280" cy="146" rx="5" ry="2"/><circle cx="1280" cy="142" r="2"/>
+    </g>
+  </svg>
+  <!-- Om symbol watermark -->
+  <svg class="om-watermark" viewBox="0 0 200 200" aria-hidden="true">
+    <circle cx="100" cy="100" r="80" fill="none" stroke="#FFD78A" stroke-opacity=".25" stroke-width="1"/>
+    <circle cx="100" cy="100" r="65" fill="none" stroke="#FFD78A" stroke-opacity=".15" stroke-width=".7" stroke-dasharray="3 3"/>
+    <text x="100" y="135" text-anchor="middle" font-size="120" fill="#FFD78A" fill-opacity=".25" font-family="serif">ॐ</text>
+  </svg>
   <div class="w">
-    <header class="tp-head sr">
-      <small>Multi-stop itinerary</small>
-      <h1>Trip Planner <span class="tp-emoji">🗺</span></h1>
-      <p>Build a multi-destination journey across Indian and global cities. Pick a curated template or start from scratch &mdash; weather, currency and visa details will populate automatically when you save.</p>
-    </header>
+    <span class="page-hero-tag">Spiritual India</span>
+    <h1>Find peace.<br/>Find <em>yourself</em>.</h1>
+    <p>Plan your sacred journey across India's holiest cities — Varanasi, Rishikesh, Tirupati, Amritsar. Weather, currency and visa details populate automatically.</p>
+    <div class="category-strip dark">
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21 L3 9 L8 6 L12 9 L16 6 L21 9 L21 21 Z M7 21 L7 13 L11 13 L11 21 M14 21 L14 14 L18 14 L18 21"/><path d="M12 9 L12 5 M11 5 L13 5"/></svg></span><span class="cat-label">Pilgrimage</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 20 L5 14 L8 14 L8 11 L12 8 L16 11 L16 14 L19 14 L19 20"/><path d="M3 20 L21 20"/></svg></span><span class="cat-label">Ashrams</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="6" r="2"/><path d="M9 12 L7 18 M15 12 L17 18 M12 8 L12 12 M8 12 L16 12"/></svg></span><span class="cat-label">Yoga</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9" stroke-dasharray="2 3"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/></svg></span><span class="cat-label">Meditation</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 C13 5 14 7 14 9 C14 11 13 12 12 12 C11 12 10 11 10 9 C10 7 11 5 12 3 Z"/><path d="M9 13 L15 13 L14 17 L10 17 Z"/></svg></span><span class="cat-label">Festivals</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polygon points="12,2 14.6,8.6 22,9.3 16.5,14 18.2,21 12,17.3 5.8,21 7.5,14 2,9.3 9.4,8.6"/></svg></span><span class="cat-label">Spiritual Tours</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="tp pat-lotus">
+  <div class="w">
 
     <div class="tp-templates sr">
       <div class="tp-tpl-head">
@@ -98,11 +144,25 @@ interface TripTemplate {
   </div>
 </section>`,
   styles: [`
-    .tp{padding:120px 0 80px;background:#F7F8FA;min-height:100vh}
+    /* Spiritual India hero */
+    .hero-trip{background:linear-gradient(135deg,#0F0A2E 0%,#1F0D3D 35%,#3B1856 65%,#7A1F2B 100%);min-height:540px;padding-bottom:80px}
+    .hero-trip .page-hero-overlay{background:radial-gradient(circle at 50% 30%,rgba(255,215,138,.22) 0%,transparent 55%),radial-gradient(circle at 30% 80%,rgba(212,168,67,.15) 0%,transparent 55%)}
+    .hero-trip .page-hero-pattern{opacity:.15;filter:invert(1) brightness(1.6)}
+    .ghat-skyline{position:absolute;left:0;right:0;bottom:0;width:100%;height:170px;z-index:2;pointer-events:none}
+    .diya-row{position:absolute;bottom:140px;left:0;right:0;height:30px;pointer-events:none;z-index:3}
+    .diya-flame{position:absolute;width:14px;height:18px;background:radial-gradient(circle at 50% 30%,#FFE49E 0%,#FF6B00 50%,#7A1F2B 100%);border-radius:50% 50% 30% 30%;filter:drop-shadow(0 0 8px rgba(255,107,0,.7));animation:flicker 1.6s ease-in-out infinite}
+    .om-watermark{position:absolute;top:80px;right:8%;width:220px;height:220px;z-index:1;opacity:.55;animation:omPulse 6s ease-in-out infinite}
+    @keyframes omPulse{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.05);opacity:.75}}
+    @keyframes flicker{0%,100%{transform:scaleY(1) translateY(0)}50%{transform:scaleY(1.15) translateY(-2px)}}
+    /* Body */
+    .tp{padding:60px 0 80px;background:linear-gradient(180deg,#FDF7EC 0%,#F7F8FA 100%);min-height:100vh;position:relative}
+    .tp.pat-lotus::before{content:'';position:absolute;inset:0;opacity:.06;pointer-events:none}
     .tp-head{margin-bottom:28px}
     .tp-head small{font-size:12px;color:#FF6B00;text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
     .tp-head h1{font-size:36px;font-weight:900;letter-spacing:-1.5px;margin:6px 0 8px}
     .tp-head p{font-size:14px;color:#3D4A5C;max-width:560px;line-height:1.7}
+    /* Diya-style numbered circle */
+    .tp-num{position:relative;background:radial-gradient(circle at 50% 30%,#FFE49E 0%,#FF8A3D 50%,#7A1F2B 100%) !important;box-shadow:0 0 16px rgba(255,107,0,.45);color:#1A0A0F !important;text-shadow:0 1px 1px rgba(255,255,255,.5)}
     .tp-stops{display:flex;flex-direction:column;gap:14px;margin-bottom:18px}
     .tp-stop{background:#fff;border:1px solid #E5E9F0;border-radius:18px;padding:18px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
     .tp-num{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#FF6B00,#FF8A3D);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0}
@@ -142,6 +202,7 @@ interface TripTemplate {
   `]
 })
 export class TripPlannerComponent {
+  diyaArr = Array.from({length:8});
   stops = signal<TripStop[]>([
     { id: 1, city: 'Toronto (YYZ)', arrive: '', depart: '', notes: 'Departure' },
     { id: 2, city: 'Delhi (DEL)', arrive: '', depart: '', notes: 'Golden Triangle start' },

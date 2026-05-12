@@ -76,8 +76,28 @@ import { BookingType } from '../../models';
 
         <ng-container *ngIf="step()==='confirmed'">
           <div class="bk-success">
-            <div class="bk-tick">✓</div>
-            <h2>Booking confirmed!</h2>
+            <!-- Animated lotus bloom -->
+            <svg class="bk-lotus" viewBox="0 0 120 120" aria-hidden="true">
+              <g transform="translate(60 60)">
+                <ellipse class="lp" cx="0" cy="-32" rx="10" ry="22" fill="#FFC58A"/>
+                <ellipse class="lp lp2" cx="22" cy="-22" rx="10" ry="22" fill="#FF8A3D" transform="rotate(45)"/>
+                <ellipse class="lp lp3" cx="32" cy="0" rx="10" ry="22" fill="#FF6B00" transform="rotate(90)"/>
+                <ellipse class="lp lp4" cx="22" cy="22" rx="10" ry="22" fill="#FF8A3D" transform="rotate(135)"/>
+                <ellipse class="lp lp5" cx="0" cy="32" rx="10" ry="22" fill="#FFC58A" transform="rotate(180)"/>
+                <ellipse class="lp lp6" cx="-22" cy="22" rx="10" ry="22" fill="#FF8A3D" transform="rotate(225)"/>
+                <ellipse class="lp lp7" cx="-32" cy="0" rx="10" ry="22" fill="#FF6B00" transform="rotate(270)"/>
+                <ellipse class="lp lp8" cx="-22" cy="-22" rx="10" ry="22" fill="#FF8A3D" transform="rotate(315)"/>
+                <circle r="12" fill="#D4A843"/>
+                <circle r="6" fill="#7A1F2B"/>
+              </g>
+            </svg>
+            <!-- Confetti -->
+            <div class="bk-confetti" aria-hidden="true">
+              <span *ngFor="let i of [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]" [style.left]="(i*5+5)+'%'" [style.animationDelay]="(i*0.15)+'s'"></span>
+            </div>
+            <div class="mughal-arch-frame lg" style="display:inline-block">
+              <h2>Booking confirmed!</h2>
+            </div>
             <p>Reference <strong>{{confirmationId()}}</strong>. We've emailed your confirmation.</p>
             <div class="bk-row">
               <a class="ghost-btn" routerLink="/dashboard">View bookings</a>
@@ -99,7 +119,21 @@ import { BookingType } from '../../models';
   </div>
 </section>`,
   styles: [`
-    .bk-page{padding:120px 0 80px;background:#F7F8FA;min-height:100vh}
+    .bk-page{padding:120px 0 80px;background:linear-gradient(180deg,var(--cream,#FFF7E8) 0%,#F8F2E8 100%);min-height:100vh;position:relative}
+    .bk-page::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><g fill='none' stroke='%237A1F2B' stroke-opacity='.05' stroke-width='1'><path d='M40 90 C40 60 60 50 80 60 C90 40 110 40 120 60 C140 50 160 70 150 90 C160 100 150 130 130 130 C120 150 80 150 70 130 C40 130 30 100 40 90Z'/></g></svg>");pointer-events:none}
+    .bk-page > *{position:relative;z-index:1}
+    .bk-summary{position:relative;overflow:visible}
+    .bk-summary::before,.bk-summary::after{content:'';position:absolute;width:32px;height:32px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none' stroke='%23D4A843' stroke-width='1.5'><path d='M2 2 L18 2 M2 2 L2 18 M2 14 L8 8 L14 14 M14 2 C18 6 14 10 18 14'/></svg>") no-repeat center/contain;opacity:.55}
+    .bk-summary::before{top:-6px;left:-6px}
+    .bk-summary::after{top:-6px;right:-6px;transform:scaleX(-1)}
+    .bk-lotus{width:120px;height:120px;animation:lotusBloom 1.4s ease-out both}
+    .lp{transform-origin:60px 60px;animation:lotusPetal 1.4s ease-out both}
+    .bk-confetti{position:absolute;top:0;left:0;right:0;height:380px;pointer-events:none;overflow:hidden}
+    .bk-confetti span{position:absolute;top:-20px;width:10px;height:14px;background:#D4A843;animation:confettiDrop 3.4s ease-in infinite;opacity:.85}
+    .bk-confetti span:nth-child(odd){background:#FF6B00}
+    .bk-confetti span:nth-child(3n){background:#138808}
+    .bk-confetti span:nth-child(5n){background:#7A1F2B}
+    .bk-success{position:relative}
     .bk-back{font-size:13px;color:#8B95A5;font-weight:600;text-decoration:none;display:inline-block;margin-bottom:12px}
     .bk-back:hover{color:#FF6B00}
     h1{font-size:32px;font-weight:900;letter-spacing:-1.5px;margin-bottom:18px;text-transform:capitalize}

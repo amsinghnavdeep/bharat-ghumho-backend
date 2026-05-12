@@ -25,6 +25,34 @@ import { Lotus3dComponent } from '../../components/lotus-3d/lotus-3d.component';
   ],
   template: `
     <app-hero/>
+    <!-- Bead chain divider between hero and search tabs -->
+    <div class="bead-chain-wrap" aria-hidden="true">
+      <div class="bead-chain">
+        <svg viewBox="0 0 380 18" preserveAspectRatio="xMidYMid meet">
+          <g>
+            <circle cx="20" cy="9" r="3.2" fill="#D4A843"/>
+            <circle cx="40" cy="9" r="2.4" fill="#FF6B00" opacity=".85"/>
+            <circle cx="58" cy="9" r="3.2" fill="#D4A843"/>
+            <circle cx="76" cy="9" r="2.4" fill="#138808" opacity=".85"/>
+            <circle cx="94" cy="9" r="3.2" fill="#D4A843"/>
+            <circle cx="112" cy="9" r="2.4" fill="#7A1F2B" opacity=".85"/>
+            <circle cx="130" cy="9" r="3.2" fill="#D4A843"/>
+            <circle cx="148" cy="9" r="2.4" fill="#FF6B00" opacity=".85"/>
+            <circle cx="166" cy="9" r="3.2" fill="#D4A843"/>
+            <path d="M188 4 L196 9 L188 14 L180 9 Z" fill="#FF6B00"/>
+            <circle cx="208" cy="9" r="3.2" fill="#D4A843"/>
+            <circle cx="226" cy="9" r="2.4" fill="#138808" opacity=".85"/>
+            <circle cx="244" cy="9" r="3.2" fill="#D4A843"/>
+            <circle cx="262" cy="9" r="2.4" fill="#7A1F2B" opacity=".85"/>
+            <circle cx="280" cy="9" r="3.2" fill="#D4A843"/>
+            <circle cx="298" cy="9" r="2.4" fill="#FF6B00" opacity=".85"/>
+            <circle cx="316" cy="9" r="3.2" fill="#D4A843"/>
+            <circle cx="334" cy="9" r="2.4" fill="#138808" opacity=".85"/>
+            <circle cx="352" cy="9" r="3.2" fill="#D4A843"/>
+          </g>
+        </svg>
+      </div>
+    </div>
     <section class="search-tabs-wrap">
       <div class="w">
         <app-search-tabs />

@@ -14,13 +14,49 @@ import { ReviewCardComponent } from '../../components/review-card/review-card.co
   standalone: true,
   imports: [CommonModule, FormsModule, ReviewCardComponent],
   template: `
-<section class="hot">
+<!-- Heritage Trails Hero -->
+<section class="page-hero hero-hotels">
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-pattern pat-kalamkari"></div>
+  <div class="jali-overlay"></div>
+  <!-- Haveli/palace silhouette watermark -->
+  <svg class="page-hero-watermark haveli" viewBox="0 0 500 400" aria-hidden="true">
+    <g fill="#FFD78A" fill-opacity=".22" stroke="#FFD78A" stroke-opacity=".35" stroke-width="1">
+      <!-- Palace dome cluster -->
+      <path d="M30 380 L30 200 L60 200 L60 170 L80 170 L80 150 L90 140 L100 150 L100 170 L120 170 L120 200 L150 200 L150 380 Z"/>
+      <path d="M170 380 L170 180 L200 180 L200 150 L210 140 L220 130 L230 120 C238 110 248 110 256 120 L266 130 L276 140 L286 150 L286 180 L316 180 L316 380 Z"/>
+      <path d="M210 130 C214 120 222 120 226 130 L222 130 Z" fill="#7A1F2B" fill-opacity=".4"/>
+      <!-- Arches -->
+      <path d="M194 380 L194 280 C194 260 210 245 230 245 C250 245 266 260 266 280 L266 380 Z" fill="#7A1F2B" fill-opacity=".25"/>
+      <!-- Side cupolas -->
+      <path d="M336 380 L336 220 L356 220 L356 200 L362 192 L370 184 L378 192 L384 200 L384 220 L404 220 L404 380 Z"/>
+      <path d="M420 380 L420 240 L440 240 L440 220 L450 210 L460 220 L460 240 L480 240 L480 380 Z"/>
+      <!-- Domes peaks -->
+      <circle cx="90" cy="138" r="6" fill="#D4A843" fill-opacity=".4"/>
+      <circle cx="230" cy="118" r="7" fill="#D4A843" fill-opacity=".4"/>
+      <circle cx="370" cy="182" r="5" fill="#D4A843" fill-opacity=".4"/>
+    </g>
+  </svg>
   <div class="w">
-    <header class="hot-head">
-      <small>Stay in style</small>
-      <h1>Find your <em>hotel</em></h1>
-      <p>From boutique heritage stays to ocean-view luxury — vetted and price-matched.</p>
-    </header>
+    <span class="page-hero-tag">Heritage Trails</span>
+    <span class="ph-deva">शाही ठहराव</span>
+    <div class="mughal-arch-frame lg" style="display:inline-block">
+      <h1>Stay in <em>Royal Comfort</em></h1>
+    </div>
+    <p>From restored havelis and palace-hotels to ocean-view luxury — vetted, price-matched and full of stories.</p>
+    <div class="category-strip dark">
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21 L3 9 L8 6 L12 9 L16 6 L21 9 L21 21 Z M7 21 L7 13 L11 13 L11 21 M14 21 L14 14 L18 14 L18 21"/></svg></span><span class="cat-label">Forts</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 18 L3 12 L7 8 L12 4 L17 8 L21 12 L21 18 Z M9 18 L9 13 L15 13 L15 18 M2 21 L22 21"/></svg></span><span class="cat-label">Palaces</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21 L21 21 M4 21 L4 10 L20 10 L20 21 M2 10 L12 3 L22 10"/></svg></span><span class="cat-label">Museums</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 21 L6 11 C6 7 9 4 12 4 C15 4 18 7 18 11 L18 21 Z M9 21 L9 14 L15 14 L15 21 M12 4 L12 2"/></svg></span><span class="cat-label">Monuments</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21 L3 12 L12 6 L21 12 L21 21 Z M8 21 L8 15 L11 15 L11 21 M13 21 L13 15 L16 15 L16 21"/></svg></span><span class="cat-label">Architecture</span></a>
+      <a class="cat-pill"><span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V5a2 2 0 0 0-2-2H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5 A2.5 2.5 0 0 0 6.5 22H20v-5H6.5A2.5 2.5 0 0 0 4 19.5z"/></svg></span><span class="cat-label">History</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="hot pat-kalamkari">
+  <div class="w">
 
     <div class="filter-bar">
       <div class="form-group">
@@ -53,14 +89,14 @@ import { ReviewCardComponent } from '../../components/review-card/review-card.co
       <article class="hot-card" *ngFor="let h of filtered()">
         <div class="hot-cover" [style.background]="cover(h)">
           <span class="hot-stars">{{stars(h.stars)}}</span>
-          <button class="heart" [class.on]="isFav(h.id)" (click)="toggleFav(h)">♥</button>
+          <button class="heart" [class.on]="isFav(h.id)" (click)="toggleFav(h)" aria-label="Toggle favorite"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
         </div>
         <div class="hot-body">
           <div class="hot-row">
             <strong>{{h.name}}</strong>
             <span class="hot-rating">★ {{h.rating | number:'1.1-1'}}</span>
           </div>
-          <small class="hot-loc">📍 {{h.city_name || h.city}}<span *ngIf="h.state">, {{h.state}}</span></small>
+          <small class="hot-loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> {{h.city_name || h.city}}<span *ngIf="h.state">, {{h.state}}</span></small>
           <p class="hot-desc">{{h.description}}</p>
           <div class="hot-amen">
             <span *ngFor="let a of (h.amenities || []).slice(0,4)">{{a}}</span>
@@ -99,7 +135,18 @@ import { ReviewCardComponent } from '../../components/review-card/review-card.co
   </div>
 </section>`,
   styles: [`
-    .hot{padding:120px 0 80px;background:#F7F8FA;min-height:100vh}
+    /* Heritage Trails hero */
+    .hero-hotels{background:linear-gradient(135deg,#3D2817 0%,#5C3A1F 30%,#8B5A2B 60%,#B8851F 100%);min-height:520px}
+    .hero-hotels .page-hero-overlay{background:radial-gradient(circle at 25% 50%,rgba(212,168,67,.32) 0%,transparent 55%),radial-gradient(circle at 75% 30%,rgba(122,31,43,.22) 0%,transparent 55%)}
+    .hero-hotels .page-hero-pattern{opacity:.18;filter:invert(1) brightness(1.6)}
+    .hero-hotels .jali-overlay{z-index:1;opacity:.18}
+    .hero-hotels .haveli{opacity:.55;width:46%;right:-3%;bottom:0;top:auto;transform:none;max-width:560px}
+    .hot{padding:60px 0 80px;background:linear-gradient(180deg,var(--cream) 0%,#F8F2E8 100%);min-height:100vh;position:relative}
+    .hot.pat-kalamkari{background:linear-gradient(180deg,var(--cream) 0%,#F8F2E8 100%)}
+    .hot.pat-kalamkari::before{content:'';position:absolute;inset:0;opacity:.08;pointer-events:none}
+    .hot-card{position:relative;overflow:hidden}
+    .hot-card::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:90px;height:18px;background:radial-gradient(ellipse at 50% 100%,#D4A843,transparent 70%);z-index:3;pointer-events:none;opacity:.65}
+    .hot-card:hover{box-shadow:0 16px 40px rgba(122,31,43,.22)}
     .hot-head{margin-bottom:28px;text-align:center}
     .hot-head small{font-size:12px;color:#138808;text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
     .hot-head h1{font-size:42px;font-weight:900;letter-spacing:-2px;margin:6px 0 8px}

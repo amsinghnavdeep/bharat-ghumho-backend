@@ -242,3 +242,19 @@
   .fc-cta-strip { flex-direction: column; align-items: flex-start; padding: 24px; }
   .fcc-chart { height: 80px; }
 }
+
+/* Mitti Yatra theme additions */
+.fc-page-tag {
+  display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;
+  background:rgba(212,168,67,.18);border:1px solid rgba(212,168,67,.45);color:#FFD78A;
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;margin:8px 0 16px
+}
+.fc-feather-row{display:flex;gap:18px;margin-top:24px;justify-content:flex-start}
+.fc-feather-row .fc-feather{width:38px;height:72px;animation:featherSway 4s ease-in-out infinite}
+.fc-feather-row .fc-feather:nth-child(2){animation-delay:.6s}
+.fc-feather-row .fc-feather:nth-child(3){animation-delay:1.2s}
+@keyframes featherSway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+.ft-icon svg{width:14px;height:14px;color:#D4A843}
+.fc-sel-card{position:relative;overflow:hidden}
+.fc-sel-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#D4A843,#FF6B00,#138808);transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.fc-sel-card:hover::before,.fc-sel-card.active::before{transform:scaleX(1)}
