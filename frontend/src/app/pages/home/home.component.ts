@@ -14,6 +14,11 @@ import { LandmarkStripComponent } from '../../components/landmark-strip/landmark
 import { CultureCategoriesComponent } from '../../components/culture-categories/culture-categories.component';
 import { HolidayPackagesComponent } from '../../components/holiday-packages/holiday-packages.component';
 import { Lotus3dComponent } from '../../components/lotus-3d/lotus-3d.component';
+import { HeritageShowcaseComponent } from '../../components/heritage-showcase/heritage-showcase.component';
+import { ArtsCraftsComponent } from '../../components/arts-crafts/arts-crafts.component';
+import { HandloomTextilesComponent } from '../../components/handloom-textiles/handloom-textiles.component';
+import { CulturalExperiencesComponent } from '../../components/cultural-experiences/cultural-experiences.component';
+import { HeritageTrailsComponent } from '../../components/heritage-trails/heritage-trails.component';
 
 @Component({
   selector: 'app-home', standalone: true,
@@ -21,7 +26,9 @@ import { Lotus3dComponent } from '../../components/lotus-3d/lotus-3d.component';
     CommonModule, HeroComponent, FeaturesComponent, RoutesSectionComponent,
     ReviewsComponent, CtaComponent, SearchTabsComponent, WeatherWidgetComponent,
     CurrencyConverterComponent, DestinationsCarouselComponent, LandmarkStripComponent,
-    CultureCategoriesComponent, HolidayPackagesComponent, Lotus3dComponent
+    CultureCategoriesComponent, HolidayPackagesComponent, Lotus3dComponent,
+    HeritageShowcaseComponent, ArtsCraftsComponent, HandloomTextilesComponent,
+    CulturalExperiencesComponent, HeritageTrailsComponent
   ],
   template: `
     <app-hero/>
@@ -53,6 +60,7 @@ import { Lotus3dComponent } from '../../components/lotus-3d/lotus-3d.component';
         <app-destinations-carousel [destinations]="destinations" [showWeather]="true" />
       </div>
     </section>
+    <app-heritage-showcase/>
     <section class="widgets">
       <div class="w widgets-grid">
         <app-currency-converter />
@@ -60,11 +68,15 @@ import { Lotus3dComponent } from '../../components/lotus-3d/lotus-3d.component';
         <app-weather-widget [city]="'Goa'" [showForecast]="true" />
       </div>
     </section>
+    <app-arts-crafts/>
+    <app-handloom-textiles/>
     <app-culture-categories/>
     <app-features/>
+    <app-cultural-experiences/>
     <app-holiday-packages/>
     <app-lotus-3d/>
     <app-routes-section/>
+    <app-heritage-trails/>
     <app-reviews/>
     <app-cta/>
   `,
