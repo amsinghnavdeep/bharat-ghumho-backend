@@ -1,7 +1,6 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeroComponent } from '../../components/hero/hero.component';
-import { BookingComponent } from '../../components/booking/booking.component';
 import { FeaturesComponent } from '../../components/features/features.component';
 import { RoutesSectionComponent } from '../../components/routes-section/routes-section.component';
 import { ReviewsComponent } from '../../components/reviews/reviews.component';
@@ -15,12 +14,11 @@ import { LandmarkStripComponent } from '../../components/landmark-strip/landmark
 import { CultureCategoriesComponent } from '../../components/culture-categories/culture-categories.component';
 import { HolidayPackagesComponent } from '../../components/holiday-packages/holiday-packages.component';
 import { Lotus3dComponent } from '../../components/lotus-3d/lotus-3d.component';
-import { PopularRoute } from '../../models';
 
 @Component({
   selector: 'app-home', standalone: true,
   imports: [
-    CommonModule, HeroComponent, BookingComponent, FeaturesComponent, RoutesSectionComponent,
+    CommonModule, HeroComponent, FeaturesComponent, RoutesSectionComponent,
     ReviewsComponent, CtaComponent, SearchTabsComponent, WeatherWidgetComponent,
     CurrencyConverterComponent, DestinationsCarouselComponent, LandmarkStripComponent,
     CultureCategoriesComponent, HolidayPackagesComponent, Lotus3dComponent
@@ -32,7 +30,6 @@ import { PopularRoute } from '../../models';
         <app-search-tabs />
       </div>
     </section>
-    <app-booking #booking/>
     <app-landmark-strip/>
     <section class="trending">
       <div class="w">
@@ -67,7 +64,7 @@ import { PopularRoute } from '../../models';
     <app-features/>
     <app-holiday-packages/>
     <app-lotus-3d/>
-    <app-routes-section (routeClick)="onRouteClick($event)"/>
+    <app-routes-section/>
     <app-reviews/>
     <app-cta/>
   `,
@@ -82,8 +79,6 @@ import { PopularRoute } from '../../models';
   `]
 })
 export class HomeComponent {
-  @ViewChild('booking') bookingComp!: BookingComponent;
-
   destinations: DestinationCardData[] = [
     { code: 'GOI', name: 'Goa', country: 'India', tagline: 'Beach paradise', fromPrice: 380, currency: '$', image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=800&q=80' },
     { code: 'AGR', name: 'Agra', country: 'India', tagline: 'Wonder of the world', fromPrice: 420, currency: '$', image: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80' },
@@ -94,9 +89,4 @@ export class HomeComponent {
     { code: 'BOM', name: 'Mumbai', country: 'India', tagline: 'Maximum city', fromPrice: 540, currency: '$', image: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=800&q=80' },
     { code: 'MAA', name: 'Chennai', country: 'India', tagline: 'Temple coast', fromPrice: 510, currency: '$', image: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80' }
   ];
-
-  onRouteClick(r: PopularRoute) {
-    this.bookingComp.fillAndSearch(r.from + ' (' + r.fromCode + ')', r.to + ' (' + r.toCode + ')');
-    document.getElementById('flights')?.scrollIntoView({ behavior: 'smooth' });
-  }
 }
